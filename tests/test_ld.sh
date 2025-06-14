@@ -127,6 +127,88 @@ d
 q
 " "acc=0xbb"
 
+# 7. レジスタ指定: LD IX, IX (Opcode: 0x68)
+run_test "LD IX, IX" "
+w 0 0x69
+s pc 0
+s ix 0xB0
+s nf 0
+i
+d
+q
+" "ix=0xb0.*nf=1"
+
+# 8. レジスタ指定: LD IX, ACC (Opcode: 0x69)
+run_test "LD IX, ACC" "
+w 0 0x68
+s pc 0
+s ix 0
+s acc 0xDD
+i
+d
+q
+" "ix=0xdd"
+
+# 9. 即値: LD IX, d (Opcode: 0x6A)
+run_test "LD IX, d" "
+w 0 0x6a
+w 1 0xEE
+s pc 0
+s ix 0
+i
+d
+q
+" "ix=0xee"
+
+# 10. 絶対アドレス（プログラム領域）: LD IX, [d] (Opcode: 0x6C)
+run_test "LD IX, [d]" "
+w 0 0x6c
+w 1 0x71
+w 0x71 0x56
+s pc 0
+s ix 0
+i
+d
+q
+" "ix=0x56"
+
+# 11. 絶対アドレス（データ領域）: LD IX, (d) (Opcode: 0x6D)
+run_test "LD IX, (d)" "
+w 0 0x6d
+w 1 0x89
+w 0x189 0xAC
+s pc 0
+s ix 0
+i
+d
+q
+" "ix=0xac"
+
+# 12. IX修飾（プログラム領域）: LD IX, [IX+d] (Opcode: 0x6E)
+run_test "LD IX, [IX+d]" "
+w 0 0x6e
+w 1 0x31
+w 0x91 0x9A
+s pc 0
+s ix 0x60
+i
+d
+q
+" "ix=0x9a"
+
+# 13. IX修飾（データ領域）: LD IX, (IX+d) (Opcode: 0x6F)
+run_test "LD IX, (IX+d)" "
+w 0 0x6f
+w 1 0x41
+w 0x1A1 0xBC
+s pc 0
+s ix 0x60
+i
+d
+q
+" "ix=0xbc"
+
+
 
 # --- テストサマリ ---
 echo "===================="
