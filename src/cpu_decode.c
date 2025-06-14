@@ -7,6 +7,8 @@ static int needs_operand(OperandMode mode)
 
 void decode(Cpub *cpub, Instruction *inst)
 {
+    Addr effective_addr;
+
     if (needs_operand(inst->mode)) {
         inst->d = mem_read(cpub, cpub->pc++);
     }
@@ -28,10 +30,12 @@ void decode(Cpub *cpub, Instruction *inst)
         inst->imm = mem_read(cpub, 0x100 | (inst->d & 0xFF));
         break;
     case OP_B_IX_P:
-        inst->imm = mem_read(cpub, (cpub->ix + inst->d) & 0xFF);
+        effective_addr = (cpub->ix + inst->d) & 0xFF;
+        inst->imm = mem_read(cpub, effective_addr);
         break;
     case OP_B_IX_D:
-        inst->imm = mem_read(cpub, 0x100 | ((cpub->ix + inst->d) & 0xFF));
+        effective_addr = 0x100 | ((cpub->ix + inst->d) & 0xFF);
+        inst->imm = mem_read(cpub, effective_addr);
         break;
     default:
         inst->imm = 0;
