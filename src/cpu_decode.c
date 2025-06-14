@@ -9,6 +9,12 @@ void decode(Cpub *cpub, Instruction *inst)
 {
     Addr effective_addr;
 
+    if (inst->opcode == OP_B) {
+        inst->d = mem_read(cpub, cpub->pc++);
+        inst->imm = inst->d;
+        return;
+    }
+
     if (needs_operand(inst->mode)) {
         inst->d = mem_read(cpub, cpub->pc++);
     }

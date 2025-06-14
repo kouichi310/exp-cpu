@@ -4,6 +4,8 @@
 #include "cpuboard.h"
 
 typedef enum {
+    OP_SYS = 0x00,
+    OP_B   = 0x30,
     OP_LD = 0x60,
     OP_ST = 0x70,
     OP_SUB = 0xA0,
