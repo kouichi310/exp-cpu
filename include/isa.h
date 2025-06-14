@@ -4,7 +4,7 @@
 #include "cpuboard.h"
 
 typedef enum {
-    OP_LD = 0x20,
+    OP_LD = 0x60,
 } Opcode;
 
 typedef enum {
