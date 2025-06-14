@@ -1,7 +1,7 @@
 #ifndef ISA_H
 #define ISA_H
 
-#include "cpu/cpuboard.h"
+#include "cpuboard.h"
 
 typedef enum {
     OP_LD = 0x20,

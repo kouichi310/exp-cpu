@@ -1,4 +1,4 @@
-#include "cpu/inst_ld.h"
+#include "inst_ld.h"
 
 void ld_write_acc(Cpub *cpub, Uword val) {
     cpub->acc = val;

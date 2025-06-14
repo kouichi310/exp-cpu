@@ -1,4 +1,4 @@
-#include "cpu/mem.h"
+#include "mem.h"
 
 Addr mem_read(const Cpub *cpub, Addr addr)
 {

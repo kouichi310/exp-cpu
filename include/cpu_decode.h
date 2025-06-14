@@ -1,8 +1,8 @@
 #ifndef CPU_DECODE_H
 #define CPU_DECODE_H
 
-#include "cpu/isa.h"
-#include "cpu/mem.h"
+#include "isa.h"
+#include "mem.h"
 
 void decode(Cpub *cpub, Instruction *inst);
 

@@ -1,4 +1,4 @@
-#include "cpu/cpu_fetch.h"
+#include "cpu_fetch.h"
 
 int fetch(Cpub *cpub, Instruction *out)
 {

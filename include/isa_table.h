@@ -1,7 +1,7 @@
 #ifndef ISA_TABLE_H
 #define ISA_TABLE_H
 
-#include "cpu/isa.h"
+#include "isa.h"
 
 extern ExecFunc isa_exec_table[256];
 

@@ -1,8 +1,8 @@
 #ifndef CPU_FETCH_H
 #define CPU_FETCH_H
 
-#include "cpu/isa.h"
-#include "cpu/mem.h"
+#include "isa.h"
+#include "mem.h"
 
 int fetch(Cpub *cpub, Instruction *out);
 

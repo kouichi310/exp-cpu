@@ -6,11 +6,11 @@
  *	Descrioption:	simulation(emulation) of an instruction
  */
 
-#include	"cpu/cpuboard.h"
-#include	"cpu/isa.h"
-#include   "cpu/isa_table.h"
-#include	"cpu/cpu_fetch.h"
-#include	"cpu/cpu_decode.h"
+#include	"cpuboard.h"
+#include	"isa.h"
+#include   "isa_table.h"
+#include	"cpu_fetch.h"
+#include	"cpu_decode.h"
 
 
 /*=============================================================================
