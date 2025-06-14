@@ -127,7 +127,7 @@ d
 q
 " "acc=0xbb"
 
-# 7. レジスタ指定: LD IX, IX (Opcode: 0x68)
+# 7. レジスタ指定: LD IX, IX (Opcode: 0x69)
 run_test "LD IX, IX" "
 w 0 0x69
 s pc 0
@@ -138,7 +138,7 @@ d
 q
 " "ix=0xb0.*nf=1"
 
-# 8. レジスタ指定: LD IX, ACC (Opcode: 0x69)
+# 8. レジスタ指定: LD IX, ACC (Opcode: 0x68)
 run_test "LD IX, ACC" "
 w 0 0x68
 s pc 0
