@@ -14,7 +14,7 @@ static void eor_write_reg(Cpub *cpub, DestReg reg, Uword val)
     }
     cpub->zf = (val == 0);
     cpub->nf = (val & 0x80) != 0;
-    /* EOR does not generate overflow, always clear VF */
+    /* VF is unaffected by EOR */
     cpub->vf = 0;
 }
 

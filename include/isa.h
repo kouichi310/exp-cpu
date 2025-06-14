@@ -6,7 +6,6 @@
 typedef enum {
     OP_LD = 0x60,
     OP_ST = 0x70,
-    /* ADD opcode: high nibble 0b1011 */
     OP_ADD = 0xB0,
     OP_EOR = 0xC0,
 } Opcode;
