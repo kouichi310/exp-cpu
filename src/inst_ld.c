@@ -7,8 +7,6 @@ static void ld_write_reg(Cpub *cpub, DestReg dest, Uword val)
     } else {
         cpub->ix = val;
     }
-    cpub->zf = (val == 0);
-    cpub->nf = (val & 0x80) != 0;
 }
 
 int isa_ld(Cpub *cpub, const Instruction *inst)

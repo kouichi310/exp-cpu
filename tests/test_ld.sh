@@ -51,7 +51,7 @@ s nf 0
 i
 d
 q
-" "acc=0xa0.*nf=1"
+" "acc=0xa0.*nf=0"
 
 # 1. レジスタ指定: LD ACC, IX (Opcode: 0x61)
 run_test "LD ACC, IX" "
@@ -136,7 +136,7 @@ s nf 0
 i
 d
 q
-" "ix=0xb0.*nf=1"
+" "ix=0xb0.*nf=0"
 
 # 8. レジスタ指定: LD IX, ACC (Opcode: 0x69)
 run_test "LD IX, ACC" "
@@ -208,7 +208,36 @@ d
 q
 " "ix=0xbc"
 
+# 14. 1語命令: LD ACC, ACC (Opcode 0x60) で PC が +1
+run_test "PC inc (1-byte) LD ACC, ACC" "
+w 0 0x60
+s pc 0
+s acc 0x12
+i
+d
+q
+" "CPU0,PC=0x1>"
 
+# 15. 2語命令: LD ACC, d (Opcode 0x62) で PC が +2
+run_test "PC inc (2-byte) LD ACC, d" "
+w 0 0x62
+w 1 0x34
+s pc 0
+i
+d
+q
+" "CPU0,PC=0x2>"
+
+# 16. 1語命令: LD IX, ACC (Opcode 0x68) で IX に値が入り PC が +1
+run_test "PC inc (1-byte) LD IX, ACC" "
+w 0 0x68
+s pc 0
+s acc 0x56
+s ix  0x00
+i
+d
+q
+" "CPU0,PC=0x1>"
 
 # --- テストサマリ ---
 echo "===================="
