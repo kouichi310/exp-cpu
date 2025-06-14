@@ -17,7 +17,7 @@ cpu-sim/                 ＜プロジェクト・ルート＞
 │   ├─ cpu_decode.c      ; IR を Instr へ展開し即値読込み
 │   ├─ isa_table.c       ; exec ハンドラ配列初期化
 │   │
-│   ├─ inst_loadstore.c  ; LD / ST 系（今回まずここを実装）
+│   ├─ inst_ld.c         ; LD 命令実装
 │   ├─ inst_arith.c      ; ADD / ADC / SUB / CMP …
 │   ├─ inst_branch.c     ; BA / BNZ / JAL / JR …
 │   ├─ inst_misc.c       ; NOP / HLT / シフト命令 など
