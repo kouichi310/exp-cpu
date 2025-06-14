@@ -22,7 +22,7 @@ int isa_sub(Cpub *cpub, const Instruction *inst)
 
     sub_write_reg(cpub, inst->dest, result);
 
-    /* CF is unaffected by SUB */
+    cpub->cf = (diff & 0x100) != 0;
     cpub->vf = (((src ^ inst->imm) & (src ^ result) & 0x80) != 0);
     cpub->nf = (result & 0x80) != 0;
     cpub->zf = (result == 0);
