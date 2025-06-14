@@ -6,15 +6,41 @@ SCRIPT_DIR="$(dirname "$0")"
 make clean >/dev/null
 make >/dev/null
 
-EXIT_STATUS=0
+TOTAL=0
+PASS=0
+FAIL=0
+FAIL_MESSAGES=""
+
 for test_script in "$SCRIPT_DIR"/test_*.sh; do
-  echo "Running $(basename "$test_script")" >&2
-  if sh "$test_script"; then
-    echo "ALL TEST IS PASS" >&2
+  TOTAL=$((TOTAL + 1))
+  TEST_NAME=$(basename "$test_script")
+  OUTPUT_FILE=$(mktemp)
+
+  if sh "$test_script" >"$OUTPUT_FILE" 2>&1; then
+    printf "."
+    PASS=$((PASS + 1))
   else
-    echo "FAIL" >&2
-    EXIT_STATUS=1
+    printf "F"
+    FAIL=$((FAIL + 1))
+    FAIL_MESSAGES="$FAIL_MESSAGES\n[${TEST_NAME}]\n$(cat "$OUTPUT_FILE")"
   fi
-  echo >&2
+
+  rm -f "$OUTPUT_FILE"
 done
-exit $EXIT_STATUS
+
+printf "\n"
+
+if [ "$FAIL" -ne 0 ]; then
+  printf "%b\n" "$FAIL_MESSAGES"
+fi
+
+echo "===================="
+echo "Test Summary"
+echo "===================="
+echo "TOTAL: $TOTAL, PASS: $PASS, FAIL: $FAIL"
+
+if [ "$FAIL" -ne 0 ]; then
+  exit 1
+fi
+
+exit 0
