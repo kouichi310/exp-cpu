@@ -6,6 +6,7 @@
 typedef enum {
     OP_LD = 0x60,
     OP_ST = 0x70,
+    OP_EOR = 0xC0,
 } Opcode;
 
 typedef enum {
