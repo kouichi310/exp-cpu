@@ -8,20 +8,27 @@ typedef enum {
 } Opcode;
 
 typedef enum {
-    AM_ACC = 0x00,
-    AM_IX = 0x01,
-    AM_IMM = 0x02,
-    AM_ABS = 0x04,
-    AM_ABS_D = 0x05,
-    AM_IX_D = 0x06,
-    AM_IX_DD = 0x07,
-} AddressingMode;
+    DEST_ACC = 0,
+    DEST_IX  = 1,
+} DestReg;
+
+typedef enum {
+    OP_B_ACC   = 0x0,
+    OP_B_IX    = 0x1,
+    OP_B_IMM   = 0x2, /* 010 or 011 */
+    OP_B_ABS_P = 0x4,
+    OP_B_ABS_D = 0x5,
+    OP_B_IX_P  = 0x6,
+    OP_B_IX_D  = 0x7,
+} OperandMode;
 
 typedef struct {
-    Uword raw;
-    Opcode opcode;
-    AddressingMode addressing_mode;
-    Uword imm;
+    Uword raw;      /* first byte */
+    Opcode opcode;  /* high nibble */
+    DestReg dest;   /* A bit */
+    OperandMode mode; /* B field */
+    Uword d;        /* B' byte if present */
+    Uword imm;      /* decoded operand */
 } Instruction;
 
 typedef int (*ExecFunc)(Cpub *, const Instruction *);
