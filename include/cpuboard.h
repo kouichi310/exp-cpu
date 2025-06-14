@@ -1,3 +1,5 @@
+#ifndef CPUBOARD_H
+#define CPUBOARD_H
 /*
  *	Project-based Learning II (CPU)
  *
@@ -47,4 +49,4 @@ typedef struct cpuboard {
 #define	RUN_STEP	1
 int	step(Cpub *);
 
-
+#endif

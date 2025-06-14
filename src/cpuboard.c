@@ -7,6 +7,10 @@
  */
 
 #include	"cpuboard.h"
+#include	"isa.h"
+#include   "isa_table.h"
+#include	"cpu_fetch.h"
+#include	"cpu_decode.h"
 
 
 /*=============================================================================
@@ -15,11 +19,12 @@
 int
 step(Cpub *cpub)
 {
-	/*
-	 *   [ add codes here for the simulation of an instruction ]
-	 *   [ return RUN_STEP or RUN_HALT ]
-	 */
-	return RUN_HALT;
+	Instruction inst;
+	if (!fetch(cpub, &inst)) {
+		return RUN_HALT;
+	}
+	decode(cpub, &inst);
+	return isa_exec_table[inst.opcode](cpub, &inst);
 }
 
 
