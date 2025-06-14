@@ -9,7 +9,7 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
-#include	"cpuboard.h"
+#include	"cpu/cpuboard.h"
 
 
 void	help(void);

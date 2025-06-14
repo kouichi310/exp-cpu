@@ -1,4 +1,4 @@
-#include "cpu_decode.h"
+#include "cpu/cpu_decode.h"
 
 void decode(Cpub *cpub, Instruction *inst) {
     switch (inst->addressing_mode) {

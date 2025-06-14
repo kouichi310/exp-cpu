@@ -1,4 +1,4 @@
-#include "inst_loadstore.h"
+#include "cpu/inst_ld.h"
 
 void ld_write_acc(Cpub *cpub, Uword val) {
     cpub->acc = val;

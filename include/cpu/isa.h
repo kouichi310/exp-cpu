@@ -1,7 +1,7 @@
 #ifndef ISA_H
 #define ISA_H
 
-#include "cpuboard.h"
+#include "cpu/cpuboard.h"
 
 typedef enum {
     OP_LD = 0x20,
@@ -26,4 +26,4 @@ typedef struct {
 
 typedef int (*ExecFunc)(Cpub *, const Instruction *);
 
-#endif
+#endif /* ISA_H */
