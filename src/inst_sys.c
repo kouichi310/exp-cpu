@@ -1,7 +1,7 @@
-#include "inst_hlt.h"
+#include "inst_sys.h"
 /* 命令実装 */
 
-int isa_hlt(CpuBoard *cpub, const Instruction *inst)
+int isa_sys(CpuBoard *cpub, const Instruction *inst)
 {
     Uword sub = inst->raw & 0x0F;
 
