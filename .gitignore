@@ -1,3 +1,4 @@
 .DS_Store
-cpu_project_2
-toycc_compiler
+cpu/cpu_project_2
+toycc/toycc_compiler
+examples/*.txt
