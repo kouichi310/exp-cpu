@@ -1,10 +1,11 @@
-#ifndef CPUBOARD_H
-#define CPUBOARD_H
+#ifndef CPU_BOARD_H
+#define CPU_BOARD_H
+/* CPUボードの定義 */
 /*
  *      Project-based Learning II (CPU)
  *
  *      Program:        instruction set simulator of the Educational CPU Board
- *      File Name:      cpuboard.h
+ *      File Name:      cpu_board.h
  *      Descrioption:   resource definition of the educational computer board
  */
 
@@ -28,7 +29,7 @@ typedef struct iobuf {
         Uword   buf;
 } IOBuf;
 
-typedef struct cpuboard {
+typedef struct cpu_board {
         Uword   pc;
         Uword   acc;
         Uword   ix;
@@ -39,7 +40,7 @@ typedef struct cpuboard {
          *   [ add here the other CPU resources if necessary ]
          */
         Uword   mem[MEMORY_SIZE];       /* 0XX:Program, 1XX:Data */
-} Cpub;
+} CpuBoard;
 
 
 /*=============================================================================
@@ -47,6 +48,7 @@ typedef struct cpuboard {
  *===========================================================================*/
 #define RUN_HALT        0
 #define RUN_STEP        1
-int     step(Cpub *);
+/* 1ステップ実行 */
+int     run_step(CpuBoard *);
 
-#endif /* CPUBOARD_H */
+#endif /* CPU_BOARD_H */

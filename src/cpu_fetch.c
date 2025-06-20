@@ -1,6 +1,7 @@
 #include "cpu_fetch.h"
+/* 命令フェッチ */
 
-int fetch(Cpub *cpub, Instruction *out)
+int fetch_instruction(CpuBoard *cpub, Instruction *out)
 {
     out->raw = mem_read(cpub, cpub->pc++);
     out->opcode = (Opcode)(out->raw & 0xF0);
@@ -17,5 +18,6 @@ int fetch(Cpub *cpub, Instruction *out)
     }
     out->d = 0;
     out->imm = 0;
+    out->effective_addr = 0;
     return 1;
 }

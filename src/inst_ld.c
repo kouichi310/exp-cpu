@@ -1,16 +1,9 @@
 #include "inst_ld.h"
+/* 命令実装 */
+#include "cpu_utils.h"
 
-static void ld_write_reg(Cpub *cpub, DestReg dest, Uword val)
+int isa_ld(CpuBoard *cpub, const Instruction *inst)
 {
-    if (dest == DEST_ACC) {
-        cpub->acc = val;
-    } else {
-        cpub->ix = val;
-    }
-}
-
-int isa_ld(Cpub *cpub, const Instruction *inst)
-{
-    ld_write_reg(cpub, inst->dest, inst->imm);
+    cpu_write_reg(cpub, inst->dest, inst->imm);
     return RUN_STEP;
 }

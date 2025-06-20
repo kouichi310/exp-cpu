@@ -1,45 +1,21 @@
 #include "inst_st.h"
+/* 命令実装 */
+#include "cpu_utils.h"
 
-static Uword st_read_reg(const Cpub *cpub, DestReg src)
+int isa_st(CpuBoard *cpub, const Instruction *inst)
 {
-    return (src == DEST_ACC) ? cpub->acc : cpub->ix;
-}
+    Uword val = cpu_read_reg(cpub, inst->dest);
 
-static void st_write_operand(Cpub *cpub, OperandMode mode, Uword d, Uword val)
-{
-    Addr addr;
-    switch (mode) {
+    switch (inst->mode) {
     case OP_B_ACC:
-        cpub->acc = val;
+        cpu_write_reg(cpub, DEST_ACC, val);
         break;
     case OP_B_IX:
-        cpub->ix = val;
-        break;
-    case OP_B_IMM:
-        mem_write(cpub, d & 0xFF, val);
-        break;
-    case OP_B_ABS_P:
-        mem_write(cpub, d & 0xFF, val);
-        break;
-    case OP_B_ABS_D:
-        mem_write(cpub, 0x100 | (d & 0xFF), val);
-        break;
-    case OP_B_IX_P:
-        addr = (cpub->ix + d) & 0xFF;
-        mem_write(cpub, addr, val);
-        break;
-    case OP_B_IX_D:
-        addr = 0x100 | ((cpub->ix + d) & 0xFF);
-        mem_write(cpub, addr, val);
+        cpu_write_reg(cpub, DEST_IX, val);
         break;
     default:
+        mem_write(cpub, inst->effective_addr, val);
         break;
     }
-}
-
-int isa_st(Cpub *cpub, const Instruction *inst)
-{
-    Uword val = st_read_reg(cpub, inst->dest);
-    st_write_operand(cpub, inst->mode, inst->d, val);
     return RUN_STEP;
 }

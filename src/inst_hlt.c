@@ -1,6 +1,7 @@
 #include "inst_hlt.h"
+/* 命令実装 */
 
-int isa_hlt(Cpub *cpub, const Instruction *inst)
+int isa_hlt(CpuBoard *cpub, const Instruction *inst)
 {
     Uword sub = inst->raw & 0x0F;
 

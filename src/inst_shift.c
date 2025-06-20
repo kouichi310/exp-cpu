@@ -1,22 +1,10 @@
 #include "inst_shift.h"
+/* 命令実装 */
+#include "cpu_utils.h"
 
-static Uword read_reg(const Cpub *cpub, DestReg reg)
+int isa_shift(CpuBoard *cpub, const Instruction *inst)
 {
-    return (reg == DEST_ACC) ? cpub->acc : cpub->ix;
-}
-
-static void write_reg(Cpub *cpub, DestReg reg, Uword val)
-{
-    if (reg == DEST_ACC) {
-        cpub->acc = val;
-    } else {
-        cpub->ix = val;
-    }
-}
-
-int isa_shift(Cpub *cpub, const Instruction *inst)
-{
-    Uword val = read_reg(cpub, inst->dest);
+    Uword val = cpu_read_reg(cpub, inst->dest);
     Uword result = val;
     Bit b0 = val & 0x1;
     Bit b7 = (val >> 7) & 0x1;
@@ -76,6 +64,6 @@ int isa_shift(Cpub *cpub, const Instruction *inst)
         }
     }
 
-    write_reg(cpub, inst->dest, result);
+    cpu_write_reg(cpub, inst->dest, result);
     return RUN_STEP;
 }

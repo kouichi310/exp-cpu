@@ -1,7 +1,8 @@
 #ifndef ISA_H
 #define ISA_H
+/* ISA定義 */
 
-#include "cpuboard.h"
+#include "cpu_board.h"
 
 typedef enum {
     OP_SYS = 0x00,
@@ -50,10 +51,11 @@ typedef struct {
     OperandMode mode; /* B field */
     Uword d;        /* B' byte if present */
     Uword imm;      /* decoded operand */
+    Addr effective_addr; /* 計算済みアドレス */
     ShiftMode sm;   /* shift/rotate mode */
     Bit is_rot;     /* rotate instruction flag */
 } Instruction;
 
-typedef int (*ExecFunc)(Cpub *, const Instruction *);
+typedef int (*ExecFunc)(CpuBoard *, const Instruction *);
 
 #endif /* ISA_H */
