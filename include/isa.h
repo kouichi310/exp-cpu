@@ -10,6 +10,8 @@ typedef enum {
     OP_B   = 0x30,
     OP_LD  = 0x60,
     OP_ST  = 0x70,
+    OP_SBC = 0x80,
+    OP_ADC = 0x90,
     OP_SUB = 0xA0,
     OP_ADD = 0xB0,
     OP_EOR = 0xC0,
