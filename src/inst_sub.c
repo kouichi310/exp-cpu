@@ -1,31 +1,18 @@
 #include "inst_sub.h"
+/* 命令実装 */
+#include "cpu_utils.h"
 
-static Uword sub_read_reg(const Cpub *cpub, DestReg reg)
+int isa_sub(CpuBoard *cpub, const Instruction *inst)
 {
-    return (reg == DEST_ACC) ? cpub->acc : cpub->ix;
-}
-
-static void sub_write_reg(Cpub *cpub, DestReg reg, Uword val)
-{
-    if (reg == DEST_ACC) {
-        cpub->acc = val;
-    } else {
-        cpub->ix = val;
-    }
-}
-
-int isa_sub(Cpub *cpub, const Instruction *inst)
-{
-    Uword src = sub_read_reg(cpub, inst->dest);
+    Uword src = cpu_read_reg(cpub, inst->dest);
     unsigned int diff = src - inst->imm;
     Uword result = diff & 0xFF;
 
-    sub_write_reg(cpub, inst->dest, result);
+    cpu_write_reg(cpub, inst->dest, result);
 
     cpub->cf = (diff & 0x100) != 0;
     cpub->vf = (((src ^ inst->imm) & (src ^ result) & 0x80) != 0);
-    cpub->nf = (result & 0x80) != 0;
-    cpub->zf = (result == 0);
+    cpu_set_nz_flags(cpub, result);
 
     return RUN_STEP;
 }

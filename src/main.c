@@ -9,19 +9,20 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
-#include	"cpuboard.h"
+#include	"cpu_board.h"
+/* メイン処理 */
 
 
 void	help(void);
-int	init_cpub(void);
-void	cont(Cpub *, char *);
-void	display_regs(Cpub *);
-void	set_reg(Cpub *, char *, char *);
-void	display_mem(Cpub *, char *);
-void	display_mem_line(Cpub *, Addr);
-void	display_mem_all(Cpub *);
-void	set_mem(Cpub *, char *, char *);
-void	read_mem_file(Cpub *, char *);
+int	init_cpu(void);
+void	cont(CpuBoard *, char *);
+void	display_regs(CpuBoard *);
+void	set_reg(CpuBoard *, char *, char *);
+void	display_mem(CpuBoard *, char *);
+void	display_mem_line(CpuBoard *, Addr);
+void	display_mem_all(CpuBoard *);
+void	set_mem(CpuBoard *, char *, char *);
+void	read_mem_file(CpuBoard *, char *);
 void	cmd_syntax_error(void);
 void	unknown_command(void);
 
@@ -29,7 +30,7 @@ void	unknown_command(void);
 /*=============================================================================
  *   CPU Board States
  *===========================================================================*/
-Cpub	cpuboard[2];	/* CPU board state */
+CpuBoard	cpu_boards[2];	/* CPU board state */
 
 
 /*=============================================================================
@@ -63,10 +64,10 @@ help(void)
  *   Initialization for the System Organization
  *===========================================================================*/
 int
-init_cpub(void)
+init_cpu(void)
 {
-	cpuboard[0].ibuf = &(cpuboard[1].obuf);
-	cpuboard[1].ibuf = &(cpuboard[0].obuf);
+	cpu_boards[0].ibuf = &(cpu_boards[1].obuf);
+	cpu_boards[1].ibuf = &(cpu_boards[0].obuf);
 	return 0;
 }
 
@@ -80,15 +81,15 @@ main()
 #define	CLSIZE	160
 	char	cmdline[CLSIZE];	/* command line buffer */
 	char	cmd[CLSIZE], arg1[CLSIZE], arg2[CLSIZE], dummy[CLSIZE];
-	Cpub	*cpub;			/* current CPU board state */
+	CpuBoard	*cpu;			/* current CPU board state */
 	int	cpub_id;		/* current CPU board ID */
 	int	n;
 
 	/*
 	 *   Initialize the CPU board state
 	 */
-	cpub_id = init_cpub();
-	cpub = &(cpuboard[cpub_id]);
+	cpub_id = init_cpu();
+	cpu = &(cpu_boards[cpub_id]);
 
 	/*
 	 *   Interpret commands
@@ -97,7 +98,7 @@ main()
 		/*
 		 *   Prompt
 		 */
-		fprintf(stderr,"CPU%d,PC=0x%x> ",cpub_id,cpub->pc);
+		fprintf(stderr,"CPU%d,PC=0x%x> ",cpub_id,cpu->pc);
 		fflush(stderr);
 
 		/*
@@ -117,43 +118,43 @@ main()
 		}
 		switch( cmd[0] ) {
 		   case 'i':
-			if( step(cpub) == RUN_HALT ) {
+			if( run_step(cpu) == RUN_HALT ) {
 				fprintf(stderr,"Program Halted.\n");
 			}
 			break;
 		   case 'c':
 			switch( n ) {
-			   case 1:	cont(cpub,NULL); break;
-			   case 2:	cont(cpub,arg1); break;
+			   case 1:	cont(cpu,NULL); break;
+			   case 2:	cont(cpu,arg1); break;
 			   default:	goto syntaxerr;
 			}
 			break;
 		   case 'd':
 			if( n != 1 ) goto syntaxerr;
-			display_regs(cpub);
+			display_regs(cpu);
 			break;
 		   case 's':
 			if( n != 3 ) goto syntaxerr;
-			set_reg(cpub,arg1,arg2);
+			set_reg(cpu,arg1,arg2);
 			break;
 		   case 'm':
 			switch( n ) {
-			   case 1:	display_mem_all(cpub); break;
-			   case 2:	display_mem(cpub,arg1); break;
+			   case 1:	display_mem_all(cpu); break;
+			   case 2:	display_mem(cpu,arg1); break;
 			   default:	goto syntaxerr;
 			}
 			break;
 		   case 'w':
 			if( n != 3 ) goto syntaxerr;
-			set_mem(cpub,arg1,arg2);
+			set_mem(cpu,arg1,arg2);
 			break;
 		   case 'r':
 			if( n != 2 ) goto syntaxerr;
-			read_mem_file(cpub,arg1);
+			read_mem_file(cpu,arg1);
 			break;
 		   case 't':
 			cpub_id ^= 1;
-			cpub = &(cpuboard[cpub_id]);
+			cpu = &(cpu_boards[cpub_id]);
 			break;
 		   case 'h':
 		   case '?':
@@ -181,7 +182,7 @@ main()
  *   Command: Continue(Start) Execution
  *===========================================================================*/
 void
-cont(Cpub *cpub, char *straddr)
+cont(CpuBoard *cpu, char *straddr)
 {
 #define	MAX_EXEC_COUNT	500
 	int	addr;
@@ -207,7 +208,7 @@ cont(Cpub *cpub, char *straddr)
 	 */
 	count = 1;
 	do {
-		if( step(cpub) == RUN_HALT ) {
+		if( run_step(cpu) == RUN_HALT ) {
 			fprintf(stderr,"Program Halted.\n");
 			return;
 		}
@@ -215,7 +216,7 @@ cont(Cpub *cpub, char *straddr)
 			fprintf(stderr,"Too Many Instructions are Executed.\n");
 			return;
 		}
-	} while( cpub->pc != breakp );
+	} while( cpu->pc != breakp );
 }
 
 
@@ -225,15 +226,15 @@ cont(Cpub *cpub, char *straddr)
 #define	DispRegVec(R)	(Uword)(R),(Sword)(R),(Uword)(R)
 
 void
-display_regs(Cpub *cpub)
+display_regs(CpuBoard *cpu)
 {
 	fprintf(stderr,"\tacc=0x%02x(%d,%u)    ix=0x%02x(%d,%u)"
 		"   cf=%d vf=%x nf=%x zf=%x\n",
-		DispRegVec(cpub->acc),DispRegVec(cpub->ix),
-		cpub->cf,cpub->vf,cpub->nf,cpub->zf);
+		DispRegVec(cpu->acc),DispRegVec(cpu->ix),
+		cpu->cf,cpu->vf,cpu->nf,cpu->zf);
 	fprintf(stderr,"\tibuf=%x:0x%02x(%d,%u)    obuf=%x:0x%02x(%d,%u)\n",
-		cpub->ibuf->flag,DispRegVec(cpub->ibuf->buf),
-		cpub->obuf.flag,DispRegVec(cpub->obuf.buf));
+		cpu->ibuf->flag,DispRegVec(cpu->ibuf->buf),
+		cpu->obuf.flag,DispRegVec(cpu->obuf.buf));
 }
 
 
@@ -241,7 +242,7 @@ display_regs(Cpub *cpub)
  *   Command: Set a Register/Flag
  *===========================================================================*/
 void
-set_reg(Cpub *cpub, char *regname, char *strval)
+set_reg(CpuBoard *cpu, char *regname, char *strval)
 {
 	unsigned int	value, max;
 	unsigned char	*reg;
@@ -249,29 +250,29 @@ set_reg(Cpub *cpub, char *regname, char *strval)
 	/*
 	 *   Check the register/flag name
 	 */
-	if( !strcmp(regname,"pc") ) 	reg = &(cpub->pc), max = 0xff;
+	if( !strcmp(regname,"pc") ) 	reg = &(cpu->pc), max = 0xff;
 	else
-	if( !strcmp(regname,"acc") )	reg = &(cpub->acc), max = 0xff;
+	if( !strcmp(regname,"acc") )	reg = &(cpu->acc), max = 0xff;
 	else
-	if( !strcmp(regname,"ix") )	reg = &(cpub->ix), max = 0xff;
+	if( !strcmp(regname,"ix") )	reg = &(cpu->ix), max = 0xff;
 	else
-	if( !strcmp(regname,"cf") )	reg = &(cpub->cf), max = 1;
+	if( !strcmp(regname,"cf") )	reg = &(cpu->cf), max = 1;
 	else
-	if( !strcmp(regname,"vf") )	reg = &(cpub->vf), max = 1;
+	if( !strcmp(regname,"vf") )	reg = &(cpu->vf), max = 1;
 	else
-	if( !strcmp(regname,"nf") )	reg = &(cpub->nf), max = 1;
+	if( !strcmp(regname,"nf") )	reg = &(cpu->nf), max = 1;
 	else
-	if( !strcmp(regname,"zf") )	reg = &(cpub->zf), max = 1;
+	if( !strcmp(regname,"zf") )	reg = &(cpu->zf), max = 1;
 	else
-	if( !strcmp(regname,"ibuf") )	reg = &(cpub->ibuf->buf), max = 0xff,
-					cpub->ibuf->flag = 1;
+	if( !strcmp(regname,"ibuf") )	reg = &(cpu->ibuf->buf), max = 0xff,
+					cpu->ibuf->flag = 1;
 	else
-	if( !strcmp(regname,"if") )	reg = &(cpub->ibuf->flag), max = 1;
+	if( !strcmp(regname,"if") )	reg = &(cpu->ibuf->flag), max = 1;
 	else
-	if( !strcmp(regname,"obuf") )	reg = &(cpub->obuf.buf), max = 0xff,
-					cpub->obuf.flag = 1;
+	if( !strcmp(regname,"obuf") )	reg = &(cpu->obuf.buf), max = 0xff,
+					cpu->obuf.flag = 1;
 	else
-	if( !strcmp(regname,"of") )	reg = &(cpub->obuf.flag), max = 1;
+	if( !strcmp(regname,"of") )	reg = &(cpu->obuf.flag), max = 1;
 	else {
 		fprintf(stderr,"Unknown register name: %s\n",regname);
 		return;
@@ -289,7 +290,7 @@ set_reg(Cpub *cpub, char *regname, char *strval)
 	/*
 	 *   For confirmation
 	 */
-	display_regs(cpub);
+	display_regs(cpu);
 }
 
 
@@ -300,7 +301,7 @@ set_reg(Cpub *cpub, char *regname, char *strval)
 
 
 void
-display_mem(Cpub *cpub, char *straddr)
+display_mem(CpuBoard *cpu, char *straddr)
 {
 	unsigned int	addr;
 
@@ -310,19 +311,19 @@ display_mem(Cpub *cpub, char *straddr)
 		return;
 	}
 
-	display_mem_line(cpub,(Addr)MemLineBase(addr));
+	display_mem_line(cpu,(Addr)MemLineBase(addr));
 }
 
 
 void
-display_mem_line(Cpub *cpub, Addr addr)
+display_mem_line(CpuBoard *cpu, Addr addr)
 {
 	int	i, j;
 
 	for( j = 0 ; j < 2 ; j++ ) {
 		fprintf(stderr,"    | %03x: ",addr);
 		for( i = 0 ; i < 8 ; i++ ) {
-			fprintf(stderr," %02x",(Uword)cpub->mem[addr++]);
+			fprintf(stderr," %02x",(Uword)cpu->mem[addr++]);
 		}
 	}
 	fprintf(stderr,"\n");
@@ -330,12 +331,12 @@ display_mem_line(Cpub *cpub, Addr addr)
 
 
 void
-display_mem_all(Cpub *cpub)
+display_mem_all(CpuBoard *cpu)
 {
 	Addr	addr;
 
 	for( addr = 0 ; addr < MEMORY_SIZE ; addr += 16 )
-		display_mem_line(cpub,addr);
+		display_mem_line(cpu,addr);
 }
 
 
@@ -343,7 +344,7 @@ display_mem_all(Cpub *cpub)
  *   Command: Write a Word to a Memory Location
  *===========================================================================*/
 void
-set_mem(Cpub *cpub, char *straddr, char *strval)
+set_mem(CpuBoard *cpu, char *straddr, char *strval)
 {
 	unsigned int	addr, value;
 
@@ -359,8 +360,8 @@ set_mem(Cpub *cpub, char *straddr, char *strval)
 		return;
 	}
 
-	cpub->mem[addr] = value;
-	display_mem_line(cpub,(Addr)MemLineBase(addr));
+	cpu->mem[addr] = value;
+	display_mem_line(cpu,(Addr)MemLineBase(addr));
 }
 
 
@@ -368,7 +369,7 @@ set_mem(Cpub *cpub, char *straddr, char *strval)
  *   Command: Read a Program File
  *===========================================================================*/
 void
-read_mem_file(Cpub *cpub, char *file)
+read_mem_file(CpuBoard *cpu, char *file)
 {
 #define	TOKENSIZE	160
 	FILE		*fp;
@@ -413,7 +414,7 @@ read_mem_file(Cpub *cpub, char *file)
 							"0x%x\n",addr,word);
 				goto error;
 			}
-			cpub->mem[addr++] = word;
+			cpu->mem[addr++] = word;
 		}
 	}
 

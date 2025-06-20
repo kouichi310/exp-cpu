@@ -1,5 +1,6 @@
 #ifndef ISA_TABLE_H
 #define ISA_TABLE_H
+/* テーブル宣言 */
 
 #include "isa.h"
 

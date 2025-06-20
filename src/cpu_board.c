@@ -2,11 +2,12 @@
  *	Project-based Learning II (CPU)
  *
  *	Program:	instruction set simulator of the Educational CPU Board
- *	File Name:	cpuboard.c
+ *	File Name:	cpu_board.c
  *	Descrioption:	simulation(emulation) of an instruction
  */
 
-#include	"cpuboard.h"
+#include	"cpu_board.h"
+/* 命令実行サイクル */
 #include	"isa.h"
 #include   "isa_table.h"
 #include	"cpu_fetch.h"
@@ -17,13 +18,13 @@
  *   Simulation of a Single Instruction
  *===========================================================================*/
 int
-step(Cpub *cpub)
+run_step(CpuBoard *cpub)/* 1ステップ実行 */
 {
 	Instruction inst;
-	if (!fetch(cpub, &inst)) {
+	if (!fetch_instruction(cpub, &inst)) {
 		return RUN_HALT;
 	}
-	decode(cpub, &inst);
+	decode_instruction(cpub, &inst);
 	return isa_exec_table[inst.opcode](cpub, &inst);
 }
 

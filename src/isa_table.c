@@ -1,4 +1,5 @@
 #include "isa_table.h"
+/* 命令テーブル */
 #include "inst_ld.h"
 #include "inst_st.h"
 #include "inst_eor.h"
