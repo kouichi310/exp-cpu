@@ -15,6 +15,10 @@ void decode(Cpub *cpub, Instruction *inst)
         return;
     }
 
+    if (inst->opcode == OP_SR) {
+        return;
+    }
+
     if (needs_operand(inst->mode)) {
         inst->d = mem_read(cpub, cpub->pc++);
     }
