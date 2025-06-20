@@ -8,6 +8,7 @@ typedef enum {
     OP_IO  = 0x10,
     OP_CF  = 0x20,
     OP_B   = 0x30,
+    OP_SR  = 0x40,
     OP_LD  = 0x60,
     OP_ST  = 0x70,
     OP_SBC = 0x80,
@@ -35,6 +36,13 @@ typedef enum {
     OP_B_IX_D  = 0x7,
 } OperandMode;
 
+typedef enum {
+    SHIFT_RA = 0,
+    SHIFT_LA = 1,
+    SHIFT_RL = 2,
+    SHIFT_LL = 3,
+} ShiftMode;
+
 typedef struct {
     Uword raw;      /* first byte */
     Opcode opcode;  /* high nibble */
@@ -42,6 +50,8 @@ typedef struct {
     OperandMode mode; /* B field */
     Uword d;        /* B' byte if present */
     Uword imm;      /* decoded operand */
+    ShiftMode sm;   /* shift/rotate mode */
+    Bit is_rot;     /* rotate instruction flag */
 } Instruction;
 
 typedef int (*ExecFunc)(Cpub *, const Instruction *);
