@@ -6,12 +6,16 @@
 #include "inst_sub.h"
 #include "inst_bnz.h"
 #include "inst_hlt.h"
+#include "inst_io.h"
+#include "inst_cf.h"
 
 ExecFunc isa_exec_table[256] = {
     [OP_SYS] = isa_hlt,
+    [OP_IO]  = isa_io,
+    [OP_CF]  = isa_cf,
     [OP_B]   = isa_bnz,
-    [OP_LD] = isa_ld,
-    [OP_ST] = isa_st,
+    [OP_LD]  = isa_ld,
+    [OP_ST]  = isa_st,
     [OP_SUB] = isa_sub,
     [OP_ADD] = isa_add,
     [OP_EOR] = isa_eor,
