@@ -19,6 +19,17 @@ void decode(Cpub *cpub, Instruction *inst)
         return;
     }
 
+    if (inst->opcode == OP_SYS) {
+        Uword sub = inst->raw & 0x0F;
+        if (sub == 0x0A) { /* JAL */
+            inst->d = mem_read(cpub, cpub->pc++);
+            inst->imm = inst->d;
+            return;
+        } else if (sub == 0x0B) { /* JR */
+            return;
+        }
+    }
+
     if (needs_operand(inst->mode)) {
         inst->d = mem_read(cpub, cpub->pc++);
     }
