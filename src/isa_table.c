@@ -2,6 +2,9 @@
 #include "inst_ld.h"
 #include "inst_st.h"
 #include "inst_eor.h"
+#include "inst_or.h"
+#include "inst_and.h"
+#include "inst_cmp.h"
 #include "inst_add.h"
 #include "inst_adc.h"
 #include "inst_sub.h"
@@ -23,4 +26,7 @@ ExecFunc isa_exec_table[256] = {
     [OP_SUB] = isa_sub,
     [OP_ADD] = isa_add,
     [OP_EOR] = isa_eor,
+    [OP_OR]  = isa_or,
+    [OP_AND] = isa_and,
+    [OP_CMP] = isa_cmp,
 };
