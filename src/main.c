@@ -17,6 +17,7 @@ void	help(void);
 int	init_cpu(void);
 void	cont(CpuBoard *, char *);
 void	display_regs(CpuBoard *);
+void display_regs_json(CpuBoard *);
 void	set_reg(CpuBoard *, char *, char *);
 void	display_mem(CpuBoard *, char *);
 void	display_mem_line(CpuBoard *, Addr);
@@ -43,8 +44,9 @@ help(void)
 					"(one step execution)\n");
 	fprintf(stderr,"   c [addr]\t--- continue(start) execution "
 					"[to address(hex)]\n");
-	fprintf(stderr,"   d\t\t--- display the contents of registers\n");
-	fprintf(stderr,"   s reg data\t--- set data(hex) to the register\n"
+        fprintf(stderr,"   d\t\t--- display the contents of registers\n");
+        fprintf(stderr,"   j\t\t--- display registers in machine readable form\n");
+        fprintf(stderr,"   s reg data\t--- set data(hex) to the register\n"
 					"\t\t\treg: pc,acc,ix,cf,vf,nf,zf,"
 					"ibuf,if,obuf,of\n");
 	fprintf(stderr,"   m [addr]\t--- dump memory or display data "
@@ -129,11 +131,15 @@ main()
 			   default:	goto syntaxerr;
 			}
 			break;
-		   case 'd':
-			if( n != 1 ) goto syntaxerr;
-			display_regs(cpu);
-			break;
-		   case 's':
+                   case 'd':
+                        if( n != 1 ) goto syntaxerr;
+                        display_regs(cpu);
+                        break;
+                  case 'j':
+                        if( n != 1 ) goto syntaxerr;
+                        display_regs_json(cpu);
+                        break;
+                  case 's':
 			if( n != 3 ) goto syntaxerr;
 			set_reg(cpu,arg1,arg2);
 			break;
@@ -234,7 +240,16 @@ display_regs(CpuBoard *cpu)
 		cpu->cf,cpu->vf,cpu->nf,cpu->zf);
 	fprintf(stderr,"\tibuf=%x:0x%02x(%d,%u)    obuf=%x:0x%02x(%d,%u)\n",
 		cpu->ibuf->flag,DispRegVec(cpu->ibuf->buf),
-		cpu->obuf.flag,DispRegVec(cpu->obuf.buf));
+               cpu->obuf.flag,DispRegVec(cpu->obuf.buf));
+}
+
+void
+display_regs_json(CpuBoard *cpu)
+{
+        fprintf(stderr,
+                "pc=0x%x,acc=0x%x,ix=0x%x,cf=%d,vf=%d,nf=%d,zf=%d\n",
+                cpu->pc,cpu->acc,cpu->ix,
+                cpu->cf,cpu->vf,cpu->nf,cpu->zf);
 }
 
 

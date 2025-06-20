@@ -1,45 +1,8 @@
 #!/bin/sh
 set -e
 SCRIPT_DIR="$(dirname "$0")"
-BIN="$SCRIPT_DIR/../cpu_project_2"
+. "$SCRIPT_DIR/test_helper.sh"
 
-# テストの成功・失敗をカウントする変数
-PASS_COUNT=0
-FAIL_COUNT=0
-TEST_COUNT=0
-
-# 各テストを実行し、結果を評価するヘルパー関数
-run_test() {
-  TEST_NAME=$1
-  # シェル変数からヒアドキュメントへ値を渡すため、EOSのクオートを外す
-  COMMANDS=$2
-  EXPECTED_OUTPUT=$3
-
-  TEST_COUNT=$((TEST_COUNT + 1))
-  echo "--- Running test: $TEST_NAME ---"
-
-  # シミュレータを実行し、出力をキャプチャ
-  output=$("$BIN" <<EOS 2>&1
-${COMMANDS}
-EOS
-)
-
-  # 期待される出力が含まれているかチェック
-  if echo "$output" | grep -q "$EXPECTED_OUTPUT"; then
-    echo "PASS"
-    PASS_COUNT=$((PASS_COUNT + 1))
-  else
-    echo "FAIL"
-    echo "====DEBUG INFO====="
-    echo "$output"
-    echo "==================="
-    echo "EXPECTED: $EXPECTED_OUTPUT"
-    echo "GOT: "
-    echo "$output" | grep "acc="
-    FAIL_COUNT=$((FAIL_COUNT + 1))
-  fi
-  echo
-}
 
 # --- LD命令のテストケース ---
 # 0. レジスタ指定: LD ACC, ACC (Opcode: 0x60)
@@ -241,14 +204,8 @@ q
 
 # --- テストサマリ ---
 echo "===================="
-echo "Test Summary"
-echo "===================="
-echo "TOTAL: $TEST_COUNT, PASS: $PASS_COUNT, FAIL: $FAIL_COUNT"
-echo
 
-# 失敗したテストがあれば、スクリプトをエラーで終了させる
-if [ "$FAIL_COUNT" -ne 0 ]; then
-  exit 1
-fi
+print_summary
+if [ "$FAIL_COUNT" -ne 0 ]; then exit 1; fi
 
 exit 0
