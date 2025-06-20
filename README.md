@@ -30,7 +30,7 @@ variable declarations and assignments. It also offers rudimentary arrays and
 basic I/O using `in` and `out` statements. Arrays are backed by consecutive
 memory addresses and accessed via `name[index]`. Example programs demonstrating
 these features are provided in the `examples` directory (`bubble_sort.tc`,
-`quicksort.tc` and `fizzbuzz.tc`).
+`quicksort.tc` and `fizz_buzz.tc`).
 
 ## Run the Example
 
@@ -41,6 +41,13 @@ contiguous regions beginning at their base address.
 
 ```
 $ make run
+```
+
+To run a different example such as `fizz_buzz.tc`, append the file stem after
+`run`:
+
+```
+$ make run fizz_buzz
 ```
 
 ## Clean
