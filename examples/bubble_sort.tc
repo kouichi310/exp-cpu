@@ -1,0 +1,25 @@
+byte arr[5];
+byte i;
+byte j;
+byte tmp;
+
+arr[0] = 5;
+arr[1] = 1;
+arr[2] = 4;
+arr[3] = 2;
+arr[4] = 3;
+
+i = 0;
+while(i < 5) {
+    j = 0;
+    while(j < 4) {
+        if(arr[j] > arr[j + 1]) {
+            tmp = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = tmp;
+        }
+        j = j + 1;
+    }
+    i = i + 1;
+}
+hlt;

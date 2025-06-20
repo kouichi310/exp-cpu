@@ -1,0 +1,30 @@
+byte i;
+byte c3;
+byte c5;
+
+i = 1;
+c3 = 0;
+c5 = 0;
+while(i <= 20) {
+    c3 = c3 + 1;
+    c5 = c5 + 1;
+    if(c3 == 3) {
+        if(c5 == 5) {
+            out 0xff;
+            c3 = 0;
+            c5 = 0;
+        } else {
+            out 0xf0;
+            c3 = 0;
+        }
+    } else {
+        if(c5 == 5) {
+            out 0xb0;
+            c5 = 0;
+        } else {
+            out i;
+        }
+    }
+    i = i + 1;
+}
+hlt;
