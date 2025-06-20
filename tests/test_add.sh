@@ -246,7 +246,6 @@ q
 " "acc=0x03.*cf=0.*vf=0.*nf=0.*zf=0"
 
 # --- テストサマリ ---
-echo "===================="
 
 print_summary
 if [ "$FAIL_COUNT" -ne 0 ]; then exit 1; fi

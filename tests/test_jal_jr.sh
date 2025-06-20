@@ -35,7 +35,6 @@ q
 " "CPU0,PC=0x30>.*acc=0x30.*ix=0xbb.*cf=1.*vf=1.*nf=1.*zf=1"
 
 # --- Test summary ---
-echo "===================="
 
 print_summary
 if [ "$FAIL_COUNT" -ne 0 ]; then exit 1; fi

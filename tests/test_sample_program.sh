@@ -25,7 +25,6 @@ q
 " "acc=0x14.*ix=0x00"
 
 # --- Test summary ---
-echo "===================="
 
 print_summary
 if [ "$FAIL_COUNT" -ne 0 ]; then exit 1; fi

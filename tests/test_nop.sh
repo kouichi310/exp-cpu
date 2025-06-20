@@ -30,7 +30,6 @@ q
 " "CPU0,PC=0x1>"
 
 # --- テストサマリ ---
-echo "===================="
 
 print_summary
 if [ "$FAIL_COUNT" -ne 0 ]; then exit 1; fi
