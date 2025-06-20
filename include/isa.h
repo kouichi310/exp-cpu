@@ -15,6 +15,9 @@ typedef enum {
     OP_SUB = 0xA0,
     OP_ADD = 0xB0,
     OP_EOR = 0xC0,
+    OP_OR  = 0xD0,
+    OP_AND = 0xE0,
+    OP_CMP = 0xF0,
 } Opcode;
 
 typedef enum {
