@@ -12,12 +12,12 @@
 #include "inst_sub.h"
 #include "inst_sbc.h"
 #include "inst_bnz.h"
-#include "inst_hlt.h"
+#include "inst_sys.h"
 #include "inst_io.h"
 #include "inst_cf.h"
 
 ExecFunc isa_exec_table[256] = {
-    [OP_SYS] = isa_hlt,
+    [OP_SYS] = isa_sys,
     [OP_IO]  = isa_io,
     [OP_CF]  = isa_cf,
     [OP_SR]  = isa_shift,

@@ -26,3 +26,4 @@ void cpu_set_logic_flags(CpuBoard *cpu, Uword result)
     cpu->vf = 0;
     cpu_set_nz_flags(cpu, result);
 }
+
