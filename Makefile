@@ -10,7 +10,7 @@ EXAMPLE_BIN=examples/$(EXAMPLE).txt
 
 .PHONY: all clean run $(EXAMPLE)
 
-$(EXAMPLE):
+$(EXAMPLE): ; @# phony target so "make run <example>" doesn't emit a warning
 
 all: $(CPU_BIN) $(TOYCC_BIN)
 
@@ -24,7 +24,7 @@ examples/%.txt: examples/%.tc $(TOYCC_BIN)
 	$(TOYCC_BIN) $< $@
 
 run: all $(EXAMPLE_BIN)
-	echo "r $(EXAMPLE_BIN)\nc\nm 0x100\nm 0x101\nq" | $(CPU_BIN)
+	echo "r $(EXAMPLE_BIN)\nc\nm 0x100\nq" | $(CPU_BIN)
 
 clean:
 	$(MAKE) -C $(CPU_DIR) clean
