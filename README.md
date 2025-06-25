@@ -43,11 +43,15 @@ contiguous regions beginning at their base address.
 $ make run
 ```
 
-To run a different example such as `fizz_buzz.tc`, append the file stem after
-`run`:
+To run a different example, append the file stem after `run`. For instance,
+`fizz_buzz.tc` or `bubble_sort.tc` can be executed with:
 
 ```
 $ make run fizz_buzz
+```
+
+```
+$ make run bubble_sort
 ```
 
 ## Clean
