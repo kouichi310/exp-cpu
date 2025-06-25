@@ -3,15 +3,14 @@ TOYCC_DIR=toycc
 CPU_BIN=$(CPU_DIR)/cpu_project_2
 TOYCC_BIN=$(TOYCC_DIR)/toycc_compiler
 
-EXAMPLE=sample
-ifneq ($(filter fizz_buzz,$(MAKECMDGOALS)),)
-EXAMPLE=fizz_buzz
-endif
+EXAMPLE := $(if $(word 2,$(MAKECMDGOALS)),$(word 2,$(MAKECMDGOALS)),sample)
 
 EXAMPLE_SRC=examples/$(EXAMPLE).tc
 EXAMPLE_BIN=examples/$(EXAMPLE).txt
 
-.PHONY: all clean run fizz_buzz
+.PHONY: all clean run $(EXAMPLE)
+
+$(EXAMPLE):
 
 all: $(CPU_BIN) $(TOYCC_BIN)
 
@@ -25,9 +24,7 @@ examples/%.txt: examples/%.tc $(TOYCC_BIN)
 	$(TOYCC_BIN) $< $@
 
 run: all $(EXAMPLE_BIN)
-	echo "r $(EXAMPLE_BIN)\nc\nd\nq" | $(CPU_BIN)
-
-fizz_buzz:
+	echo "r $(EXAMPLE_BIN)\nc\nm 0x100\nm 0x101\nq" | $(CPU_BIN)
 
 clean:
 	$(MAKE) -C $(CPU_DIR) clean
