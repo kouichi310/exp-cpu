@@ -14,8 +14,8 @@
 #define MAX_CODE 1024
 
 /* hidden scratch locations used for array assignments */
-#define TMP_IDX_ADDR 0xFE
-#define TMP_VAL_ADDR 0xFF
+#define TMP_IDX_ADDR 0x1FE
+#define TMP_VAL_ADDR 0x1FF
 
 /* シンボル(変数)情報 */
 typedef struct {

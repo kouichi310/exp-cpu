@@ -90,8 +90,10 @@ CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 04    | 108:  00 00 00 00 00 00 0
 CPU0,PC=0xc5>
 ```
 
-The dump begins with the five array elements followed by `i`, `j` and `tmp`.
-After the program halts the array is correctly sorted as `1, 2, 3, 4, 5`, confirming the bubble sort implementation now works.
+The five bytes at `0x100` hold the sorted array.  The remaining values
+are the loop counters `i` and `j` and the temporary variable `tmp`.  At
+termination `i = 5`, `j = 4` and `tmp = 4`, so they appear as `05 04 04`
+instead of `00`.
 
 
 ### quick\_sort
@@ -100,12 +102,14 @@ After the program halts the array is correctly sorted as `1, 2, 3, 4, 5`, confir
 $ make run quick_sort
 toycc/toycc_compiler examples/quick_sort.tc examples/quick_sort.txt
 echo "r examples/quick_sort.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
-CPU0,PC=0x0> CPU0,PC=0x0> Too Many Instructions are Executed.
-CPU0,PC=0x9c>     | 100:  05 04 03 02 05 00 77 00    | 108:  65 11 b2 04 75 11 30 43
-CPU0,PC=0x9c>
+CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
+CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 02    | 108:  00 00 00 00 00 00 00 00
+CPU0,PC=0xc5>
 ```
 
-The quick sort example also fails to finish sorting. Despite the higher instruction budget the simulator eventually stops with "Too Many Instructions are Executed" and the array remains `5, 4, 3, 2, 1`.
+After rewriting the example the array is sorted correctly.  Like the
+bubble sort program, the trailing bytes represent the loop counters and
+temporary variable (`i = 5`, `j = 4`, `tmp = 2`).
 
 
 ## Clean
