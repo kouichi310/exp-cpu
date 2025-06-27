@@ -86,12 +86,12 @@ $ make run bubble_sort
 toycc/toycc_compiler examples/bubble_sort.tc examples/bubble_sort.txt
 echo "r examples/bubble_sort.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
 CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
-CPU0,PC=0x89>     | 100:  05 01 04 04 04 05 04 04    | 108:  00 00 00 00 00 00 00 00
-CPU0,PC=0x89>
+CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 04    | 108:  00 00 00 00 00 00 00 00
+CPU0,PC=0xc5>
 ```
 
 The dump begins with the five array elements followed by `i`, `j` and `tmp`.
-After the program halts the array contents are `5, 1, 4, 4, 4`. Even with the execution limit raised to 20,000,000 instructions the routine does not completely sort the data.
+After the program halts the array is correctly sorted as `1, 2, 3, 4, 5`, confirming the bubble sort implementation now works.
 
 
 ### quick\_sort
