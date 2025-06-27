@@ -21,7 +21,7 @@ x = 1;
 y = x + 2;
 ```
 
-Compiling this source produces `examples/sample.txt`, which can be loaded by the simulator.
+Compiling this source produces `examples/sample.txt`, which can be loaded by the simulator. The file contains a `.text` section with instructions followed by a `.data` section for initial memory. Variables start at zero unless changed by code.
 
 ### Additional ToyCC Examples
 
@@ -35,6 +35,8 @@ these features are provided in the `examples` directory (`bubble_sort.tc`,
 ## Run the Example
 
 Use `make run` to compile the example and execute it on the simulator. The simulator will load the generated program, run until `HLT`, and display the values stored in memory beginning at address `0x100`.
+
+The simulator now allows up to 20,000,000 instructions to execute before it reports "Too Many Instructions are Executed".
 
 Variables are allocated sequentially starting at address `0x100`. Arrays occupy
 contiguous regions beginning at their base address.
@@ -89,7 +91,7 @@ CPU0,PC=0x89>
 ```
 
 The dump begins with the five array elements followed by `i`, `j` and `tmp`.
-After the program halts the array contents are `5, 1, 4, 4, 4`, so the example does not produce a fully sorted result within the simulator's instruction limit.
+After the program halts the array contents are `5, 1, 4, 4, 4`. Even with the execution limit raised to 20,000,000 instructions the routine does not completely sort the data.
 
 
 ### quick\_sort
@@ -103,7 +105,7 @@ CPU0,PC=0x9c>     | 100:  05 04 03 02 05 00 77 00    | 108:  65 11 b2 04 75 11 3
 CPU0,PC=0x9c>
 ```
 
-The quick sort example also fails to finish sorting. The simulator reports "Too Many Instructions are Executed" and memory at `0x100` still shows the initial unsorted values `5, 4, 3, 2, 1`.
+The quick sort example also fails to finish sorting. Despite the higher instruction budget the simulator eventually stops with "Too Many Instructions are Executed" and the array remains `5, 4, 3, 2, 1`.
 
 
 ## Clean

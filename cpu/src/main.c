@@ -190,7 +190,7 @@ main()
 void
 cont(CpuBoard *cpu, char *straddr)
 {
-#define	MAX_EXEC_COUNT	500
+#define MAX_EXEC_COUNT 20000000
 	int	addr;
 	Addr	breakp;
 	int	count;

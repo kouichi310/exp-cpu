@@ -45,6 +45,9 @@ static int label_count = 0;
 static Patch patches[MAX_PATCHES];
 static int patch_count = 0;
 
+/* データ領域の初期値 */
+static unsigned char init_data[0x100];
+
 /* 生成されるバイトコード */
 static unsigned char code[MAX_CODE];
 static int code_len = 0;
@@ -70,6 +73,9 @@ static int add_symbol(const char *name, int size)
     strcpy(symbols[sym_count].name, name);
     symbols[sym_count].addr = next_addr;
     symbols[sym_count].size = size;
+    for (int i = 0; i < size; i++) {
+        init_data[next_addr - 0x100 + i] = 0;
+    }
     next_addr += size;
     symbols[sym_count].defined = 1;
     return sym_count++;
@@ -660,6 +666,12 @@ static void write_output(const char *path)
         fprintf(out, "%02x\n", code[i]);
     }
     fprintf(out, "0f\n");
+    if (next_addr > 0x100) {
+        fprintf(out, ".data 0\n");
+        for (int i = 0; i < next_addr - 0x100; i++) {
+            fprintf(out, "%02x\n", init_data[i]);
+        }
+    }
     fclose(out);
 }
 
