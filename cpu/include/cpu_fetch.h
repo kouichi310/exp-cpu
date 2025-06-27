@@ -5,6 +5,6 @@
 #include "isa.h"
 #include "mem.h"
 
-int fetch_instruction(CpuBoard *cpub, Instruction *out);
+int fetch_instruction(Cpub *cpub, Instruction *out);
 
 #endif /* CPU_FETCH_H */

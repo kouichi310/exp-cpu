@@ -2,7 +2,7 @@
 /* 命令実装 */
 #include "cpu_utils.h"
 
-int isa_adc(CpuBoard *cpub, const Instruction *inst)
+int isa_adc(Cpub *cpub, const Instruction *inst)
 {
     Uword src = cpu_read_reg(cpub, inst->dest);
     unsigned int operand = inst->imm + cpub->cf;

@@ -56,6 +56,6 @@ typedef struct {
     Bit is_rot;     /* rotate instruction flag */
 } Instruction;
 
-typedef int (*ExecFunc)(CpuBoard *, const Instruction *);
+typedef int (*ExecFunc)(Cpub *, const Instruction *);
 
 #endif /* ISA_H */

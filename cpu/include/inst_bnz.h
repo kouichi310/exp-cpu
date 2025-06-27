@@ -4,6 +4,6 @@
 
 #include "isa.h"
 
-int isa_bnz(CpuBoard *cpub, const Instruction *inst);
+int isa_bnz(Cpub *cpub, const Instruction *inst);
 
 #endif /* INST_BNZ_H */

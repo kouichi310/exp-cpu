@@ -1,7 +1,7 @@
 #include "inst_io.h"
 /* 命令実装 */
 
-int isa_io(CpuBoard *cpub, const Instruction *inst)
+int isa_io(Cpub *cpub, const Instruction *inst)
 {
     if (inst->raw & 0x08) {
         /* IN: IBUF -> ACC, clear flag */

@@ -5,6 +5,6 @@
 #include "isa.h"
 #include "mem.h"
 
-void decode_instruction(CpuBoard *cpub, Instruction *inst);
+void decode_instruction(Cpub *cpub, Instruction *inst);
 
 #endif /* CPU_DECODE_H */

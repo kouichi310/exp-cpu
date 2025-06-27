@@ -4,6 +4,6 @@
 
 #include "isa.h"
 
-int isa_and(CpuBoard *cpub, const Instruction *inst);
+int isa_and(Cpub *cpub, const Instruction *inst);
 
 #endif /* INST_AND_H */

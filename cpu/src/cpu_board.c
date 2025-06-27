@@ -18,7 +18,7 @@
  *   Simulation of a Single Instruction
  *===========================================================================*/
 int
-run_step(CpuBoard *cpub)/* 1ステップ実行 */
+step(Cpub *cpub)/* 1ステップ実行 */
 {
 	Instruction inst;
 	if (!fetch_instruction(cpub, &inst)) {

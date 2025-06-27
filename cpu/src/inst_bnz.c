@@ -2,7 +2,7 @@
 /* 命令実装 */
 #include "mem.h"
 
-int isa_bnz(CpuBoard *cpub, const Instruction *inst)
+int isa_bnz(Cpub *cpub, const Instruction *inst)
 {
     Uword target = inst->d;
     Uword bc = inst->raw & 0x0F;

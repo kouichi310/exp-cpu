@@ -1,6 +1,5 @@
 #ifndef CPU_BOARD_H
 #define CPU_BOARD_H
-/* CPUボードの定義 */
 /*
  *      Project-based Learning II (CPU)
  *
@@ -40,7 +39,7 @@ typedef struct cpu_board {
          *   [ add here the other CPU resources if necessary ]
          */
         Uword   mem[MEMORY_SIZE];       /* 0XX:Program, 1XX:Data */
-} CpuBoard;
+} Cpub;
 
 
 /*=============================================================================
@@ -49,6 +48,6 @@ typedef struct cpu_board {
 #define RUN_HALT        0
 #define RUN_STEP        1
 /* 1ステップ実行 */
-int     run_step(CpuBoard *);
+int     step(Cpub *);
 
 #endif /* CPU_BOARD_H */

@@ -15,15 +15,15 @@
 
 void	help(void);
 int	init_cpu(void);
-void	cont(CpuBoard *, char *);
-void	display_regs(CpuBoard *);
-void display_regs_json(CpuBoard *);
-void	set_reg(CpuBoard *, char *, char *);
-void	display_mem(CpuBoard *, char *);
-void	display_mem_line(CpuBoard *, Addr);
-void	display_mem_all(CpuBoard *);
-void	set_mem(CpuBoard *, char *, char *);
-void	read_mem_file(CpuBoard *, char *);
+void	cont(Cpub *, char *);
+void	display_regs(Cpub *);
+void display_regs_json(Cpub *);
+void	set_reg(Cpub *, char *, char *);
+void	display_mem(Cpub *, char *);
+void	display_mem_line(Cpub *, Addr);
+void	display_mem_all(Cpub *);
+void	set_mem(Cpub *, char *, char *);
+void	read_mem_file(Cpub *, char *);
 void	cmd_syntax_error(void);
 void	unknown_command(void);
 
@@ -31,7 +31,7 @@ void	unknown_command(void);
 /*=============================================================================
  *   CPU Board States
  *===========================================================================*/
-CpuBoard	cpu_boards[2];	/* CPU board state */
+Cpub	cpu_boards[2];	/* CPU board state */
 
 
 /*=============================================================================
@@ -83,7 +83,7 @@ main()
 #define	CLSIZE	160
 	char	cmdline[CLSIZE];	/* command line buffer */
 	char	cmd[CLSIZE], arg1[CLSIZE], arg2[CLSIZE], dummy[CLSIZE];
-	CpuBoard	*cpu;			/* current CPU board state */
+	Cpub	*cpu;			/* current CPU board state */
 	int	cpub_id;		/* current CPU board ID */
 	int	n;
 
@@ -120,7 +120,7 @@ main()
 		}
 		switch( cmd[0] ) {
 		   case 'i':
-			if( run_step(cpu) == RUN_HALT ) {
+			if( step(cpu) == RUN_HALT ) {
 				fprintf(stderr,"Program Halted.\n");
 			}
 			break;
@@ -188,7 +188,7 @@ main()
  *   Command: Continue(Start) Execution
  *===========================================================================*/
 void
-cont(CpuBoard *cpu, char *straddr)
+cont(Cpub *cpu, char *straddr)
 {
 #define MAX_EXEC_COUNT 20000000
 	int	addr;
@@ -214,7 +214,7 @@ cont(CpuBoard *cpu, char *straddr)
 	 */
 	count = 1;
 	do {
-		if( run_step(cpu) == RUN_HALT ) {
+		if( step(cpu) == RUN_HALT ) {
 			fprintf(stderr,"Program Halted.\n");
 			return;
 		}
@@ -232,7 +232,7 @@ cont(CpuBoard *cpu, char *straddr)
 #define	DispRegVec(R)	(Uword)(R),(Sword)(R),(Uword)(R)
 
 void
-display_regs(CpuBoard *cpu)
+display_regs(Cpub *cpu)
 {
 	fprintf(stderr,"\tacc=0x%02x(%d,%u)    ix=0x%02x(%d,%u)"
 		"   cf=%d vf=%x nf=%x zf=%x\n",
@@ -244,7 +244,7 @@ display_regs(CpuBoard *cpu)
 }
 
 void
-display_regs_json(CpuBoard *cpu)
+display_regs_json(Cpub *cpu)
 {
         fprintf(stderr,
                 "pc=0x%x,acc=0x%x,ix=0x%x,cf=%d,vf=%d,nf=%d,zf=%d\n",
@@ -257,7 +257,7 @@ display_regs_json(CpuBoard *cpu)
  *   Command: Set a Register/Flag
  *===========================================================================*/
 void
-set_reg(CpuBoard *cpu, char *regname, char *strval)
+set_reg(Cpub *cpu, char *regname, char *strval)
 {
 	unsigned int	value, max;
 	unsigned char	*reg;
@@ -316,7 +316,7 @@ set_reg(CpuBoard *cpu, char *regname, char *strval)
 
 
 void
-display_mem(CpuBoard *cpu, char *straddr)
+display_mem(Cpub *cpu, char *straddr)
 {
 	unsigned int	addr;
 
@@ -331,7 +331,7 @@ display_mem(CpuBoard *cpu, char *straddr)
 
 
 void
-display_mem_line(CpuBoard *cpu, Addr addr)
+display_mem_line(Cpub *cpu, Addr addr)
 {
 	int	i, j;
 
@@ -346,7 +346,7 @@ display_mem_line(CpuBoard *cpu, Addr addr)
 
 
 void
-display_mem_all(CpuBoard *cpu)
+display_mem_all(Cpub *cpu)
 {
 	Addr	addr;
 
@@ -359,7 +359,7 @@ display_mem_all(CpuBoard *cpu)
  *   Command: Write a Word to a Memory Location
  *===========================================================================*/
 void
-set_mem(CpuBoard *cpu, char *straddr, char *strval)
+set_mem(Cpub *cpu, char *straddr, char *strval)
 {
 	unsigned int	addr, value;
 
@@ -384,7 +384,7 @@ set_mem(CpuBoard *cpu, char *straddr, char *strval)
  *   Command: Read a Program File
  *===========================================================================*/
 void
-read_mem_file(CpuBoard *cpu, char *file)
+read_mem_file(Cpub *cpu, char *file)
 {
 #define	TOKENSIZE	160
 	FILE		*fp;

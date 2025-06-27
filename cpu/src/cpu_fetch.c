@@ -1,7 +1,7 @@
 #include "cpu_fetch.h"
 /* 命令フェッチ */
 
-int fetch_instruction(CpuBoard *cpub, Instruction *out)
+int fetch_instruction(Cpub *cpub, Instruction *out)
 {
     out->raw = mem_read(cpub, cpub->pc++);
     out->opcode = (Opcode)(out->raw & 0xF0);

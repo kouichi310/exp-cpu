@@ -4,6 +4,6 @@
 
 #include "isa.h"
 
-int isa_or(CpuBoard *cpub, const Instruction *inst);
+int isa_or(Cpub *cpub, const Instruction *inst);
 
 #endif /* INST_OR_H */

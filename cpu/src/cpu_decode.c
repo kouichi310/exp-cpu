@@ -6,7 +6,7 @@ static int needs_operand(OperandMode mode)
     return !(mode == OP_B_ACC || mode == OP_B_IX);
 }
 
-void decode_instruction(CpuBoard *cpub, Instruction *inst)
+void decode_instruction(Cpub *cpub, Instruction *inst)
 {
     Addr addr = 0;
 

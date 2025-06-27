@@ -2,7 +2,7 @@
 /* 命令実装 */
 #include "cpu_utils.h"
 
-int isa_st(CpuBoard *cpub, const Instruction *inst)
+int isa_st(Cpub *cpub, const Instruction *inst)
 {
     Uword val = cpu_read_reg(cpub, inst->dest);
 
