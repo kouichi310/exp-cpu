@@ -10,7 +10,7 @@ TARGET_TXT  := $(patsubst %.tc,%.txt,$(TARGET_FILE))
 
 all: $(CPU_BIN) $(TOYCC_BIN)
 
-$(TARGET_FILE): ; @# suppress "No rule to make target" warnings
+$(TARGET_FILE): ; @
 
 $(CPU_BIN):
 	$(MAKE) -C $(CPU_DIR)

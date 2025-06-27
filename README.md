@@ -1,56 +1,43 @@
-# exp-cpu Example Usage
+# exp-cpu project
 
-This repository contains a simple CPU simulator (`cpu/`) and a minimal C-like compiler (`toycc/`). A top-level Makefile is provided to build both components and run a sample program.
+このリポジトリには、シンプルなCPUシミュレータ（`cpu/`）と、最小限のCライクなコンパイラ（`toycc/`）が含まれています。ルートディレクトリには、両コンポーネントをビルドし、サンプルプログラムを実行するためのMakefileが用意されています。
 
-## Build
+## ビルド方法
 
-Run `make` in the repository root to build the simulator and the compiler.
+リポジトリのルートで `make` を実行することで、シミュレータとコンパイラの両方がビルドされます。
 
-```
-$ make
-```
+`make`
 
-## Example Program
+## サンプルプログラム
 
-A small example written for ToyCC is located at `examples/sample.tc`:
+ToyCC 用に記述された小さなサンプルプログラムが `examples/sample.tc` にあります。
 
 ```c
 byte x;
 byte y;
 x = 1;
 y = x + 2;
-```
+````
 
-Compiling this source produces `examples/sample.txt`, which can be loaded by the simulator. The file contains a `.text` section with instructions followed by a `.data` section for initial memory. Variables start at zero unless changed by code.
+このソースコードをコンパイルすると、`examples/sample.txt` が生成されます。このファイルはシミュレータによって読み込まれます。ファイルには `.text` セクション（命令）と `.data` セクション（初期メモリ）が含まれます。変数は、コードによって変更されない限り、すべて0で初期化されます。
 
-### Additional ToyCC Examples
+## サンプルのコンパイルと実行
 
-ToyCC now supports `if`/`else` statements and `while` loops in addition to
-variable declarations and assignments. It also offers rudimentary arrays and
-basic I/O using `in` and `out` statements. Arrays are backed by consecutive
-memory addresses and accessed via `name[index]`. Example programs demonstrating
-these features are provided in the `examples` directory (`bubble_sort.tc`,
-`quicksort.tc` and `fizz_buzz.tc`).
+まず、ToyCC ソースコードをテキストファイルにコンパイルします：
 
-## Compile and Run the Example
+`$ make build examples/sample.tc`
 
-First compile the ToyCC source to a text file:
+次に、シミュレータでこのプログラムを実行します。シミュレータはプログラムを読み込み、`HLT` 命令まで実行し、アドレス `0x100` からのメモリ内容を表示します。
 
-```
-$ make build examples/sample.tc
-```
+シミュレータは最大 20,000,000 命令まで実行可能で、それを超えると "Too Many Instructions are Executed" の警告が出ます。
 
-Then execute the resulting program with the simulator. The simulator will load the program, run until `HLT`, and display the values stored in memory beginning at address `0x100`.
-
-The simulator allows up to 20,000,000 instructions to execute before it reports "Too Many Instructions are Executed".
-
-Variables are allocated sequentially starting at address `0x100`. Arrays occupy contiguous regions beginning at their base address.
+変数は `0x100` から順に連続して割り当てられます。配列も同様に、基底アドレスから連続した領域を使用します。
 
 ```
 $ make run examples/sample.txt
 ```
 
-Running this command produces output similar to:
+このコマンドの出力例：
 
 ```
 $ make run examples/sample.txt
@@ -60,15 +47,11 @@ CPU0,PC=0xc>     | 100:  01 03 00 00 00 00 00 00    | 108:  00 00 00 00 00 00 00
 CPU0,PC=0xc>
 ```
 
-The bytes `01` and `03` starting at address `0x100` correspond to `x = 1` and
-`y = 3` from the source program, confirming the execution completed
-successfully.
+アドレス `0x100` に現れるバイト列 `01` と `03` は、ソースプログラムの `x = 1` および `y = 3` に対応しており、プログラムが正しく実行されたことが確認できます。
 
-## Additional Examples
+## 追加のサンプル
 
-The same approach works for the other programs in the `examples` directory.
-The sections below show the output of running several of them and inspecting
-memory at `0x100`.
+同じ方法で `examples` ディレクトリ内の他のプログラムも実行できます。以下に、いくつかの例とその出力を示します。
 
 ### fizz\_buzz
 
@@ -81,8 +64,7 @@ CPU0,PC=0x5c>     | 100:  15 02 00 00 00 00 00 00    | 108:  00 00 00 00 00 00 0
 CPU0,PC=0x5c>
 ```
 
-The values `15`, `02` and `00` correspond to the variables `i`, `c3` and `c5`. After twenty iterations the program ends with `i = 21` (`0x15`), `c3 = 2` and `c5 = 0`, confirming correct execution.
-
+値 `15`、`02`、`00` はそれぞれ `i`、`c3`、`c5` に対応します。20回のループ後、`i = 21`（16進数で `0x15`）、`c3 = 2`、`c5 = 0` となっており、正しく動作しています。
 
 ### bubble\_sort
 
@@ -95,11 +77,7 @@ CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 04    | 108:  00 00 00 00 00 00 0
 CPU0,PC=0xc5>
 ```
 
-The five bytes at `0x100` hold the sorted array.  The remaining values
-are the loop counters `i` and `j` and the temporary variable `tmp`.  At
-termination `i = 5`, `j = 4` and `tmp = 4`, so they appear as `05 04 04`
-instead of `00`.
-
+アドレス `0x100` からの5バイトは整列済みの配列を示しています。続くバイトはループ変数 `i`、`j` および一時変数 `tmp` で、終了時の値は `i = 5`、`j = 4`、`tmp = 4`（つまり `05 04 04`）となっています。
 
 ### quick\_sort
 
@@ -112,15 +90,10 @@ CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 02    | 108:  00 00 00 00 00 00 0
 CPU0,PC=0xc5>
 ```
 
-After rewriting the example the array is sorted correctly.  Like the
-bubble sort program, the trailing bytes represent the loop counters and
-temporary variable (`i = 5`, `j = 4`, `tmp = 2`).
+修正後のクイックソートのサンプルでは、配列が正しく整列されています。バブルソートと同様に、末尾の値はループカウンタと一時変数を表しており、それぞれ `i = 5`、`j = 4`、`tmp = 2` を示します。
 
+## クリーンアップ
 
-## Clean
+ビルド生成物を削除するには、以下を実行します：
 
-To remove build artifacts, run:
-
-```
-$ make clean
-```
+`$ make clean`
