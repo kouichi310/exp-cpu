@@ -13,7 +13,7 @@
 #define MAX_PATCHES 512
 #define MAX_CODE 1024
 
-/* hidden scratch locations used for array assignments */
+/* 配列代入のための作業用メモリ位置 */
 #define TMP_IDX_ADDR 0x1FE
 #define TMP_VAL_ADDR 0x1FF
 
@@ -57,7 +57,10 @@ static unsigned char code[MAX_CODE];
 static int code_len = 0;
 static int temp_label_id = 0; /* 自動生成ラベル */
 
-/* シンボル名からエントリを検索 */
+/*
+ * シンボル名から既存エントリを検索する。
+ * 見つかった場合はそのインデックスを返し、存在しなければ -1 を返す。
+ */
 static int find_symbol(const char *name)
 {
     for (int i = 0; i < sym_count; i++) {
@@ -67,7 +70,10 @@ static int find_symbol(const char *name)
     return -1;
 }
 
-/* 新しいシンボルを登録 */
+/*
+ * 新しいシンボルをテーブルに登録する。
+ * `size` で確保するバイト数を指定し、使用領域を初期化する。
+ */
 static int add_symbol(const char *name, int size)
 {
     if (sym_count >= MAX_SYMS) {
@@ -85,7 +91,10 @@ static int add_symbol(const char *name, int size)
     return sym_count++;
 }
 
-/* シンボルのアドレス取得 */
+/*
+ * シンボルのアドレスを取得する。
+ * 未定義の場合はエラーを出力して終了する。
+ */
 static int get_symbol_addr(const char *name)
 {
     int idx = find_symbol(name);
@@ -96,7 +105,10 @@ static int get_symbol_addr(const char *name)
     return symbols[idx].addr;
 }
 
-/* ラベルを検索 */
+/*
+ * 既に登録されているラベルを検索する。
+ * 存在する場合はそのインデックス、無ければ -1 を返す。
+ */
 static int find_label(const char *name)
 {
     for (int i = 0; i < label_count; i++) {
@@ -106,7 +118,9 @@ static int find_label(const char *name)
     return -1;
 }
 
-/* ラベルを取得、なければ作成 */
+/*
+ * 名前からラベルを取得する。未登録の場合は新規作成する。
+ */
 static int get_label(const char *name)
 {
     int idx = find_label(name);
@@ -122,7 +136,10 @@ static int get_label(const char *name)
     return label_count++;
 }
 
-/* 後で埋め込むラベル参照を登録 */
+/*
+ * まだアドレスが確定していないラベルへの参照を記録する。
+ * `pos` にはジャンプ先を書き込むバイト位置を指定する。
+ */
 static void add_patch(int label_idx, int pos)
 {
     if (patch_count >= MAX_PATCHES) {
@@ -134,7 +151,9 @@ static void add_patch(int label_idx, int pos)
     patch_count++;
 }
 
-/* ラベル定義。対応するパッチを解決 */
+/*
+ * ラベルを定義し、これまで登録されていた未解決の参照を埋める。
+ */
 static void define_label(const char *name, int addr)
 {
     int idx = get_label(name);
@@ -152,6 +171,9 @@ static void define_label(const char *name, int addr)
 }
 
 /* まだ残っているパッチを解決 */
+/*
+ * コンパイル終了時に未解決のラベル参照を最終的に解決する。
+ */
 static void resolve_patches(void)
 {
     for (int i = 0; i < patch_count; i++) {
@@ -165,7 +187,9 @@ static void resolve_patches(void)
     }
 }
 
-/* バイトコードを出力 */
+/*
+ * 1バイトの命令を生成バッファに追加する。
+ */
 static void emit(unsigned char byte)
 {
     if (code_len >= MAX_CODE) {
@@ -175,7 +199,9 @@ static void emit(unsigned char byte)
     code[code_len++] = byte;
 }
 
-/* 空白文字を読み飛ばす */
+/*
+ * 空白文字をスキップして次の非空白文字を先読み状態にする。
+ */
 static void parse_ws(FILE *fp)
 {
     int c;
@@ -187,7 +213,10 @@ static void parse_ws(FILE *fp)
     }
 }
 
-/* 数値を読み取る */
+/*
+ * 数値リテラルを解析し整数値として返す。
+ * 0x.. 形式なら16進として読み取る。
+ */
 static int parse_number(FILE *fp)
 {
     int c = fgetc(fp);
@@ -213,7 +242,10 @@ static int parse_number(FILE *fp)
     return val & 0xFF;
 }
 
-/* 識別子を読み取る */
+/*
+ * 変数名やラベル名となる識別子を読み取る。
+ * 結果は `buf` に文字列として格納される。
+ */
 static void parse_ident(FILE *fp, char *buf)
 {
     int c, i = 0;
@@ -224,7 +256,10 @@ static void parse_ident(FILE *fp, char *buf)
     buf[i] = '\0';
 }
 
-/* 次の文字が期待したものか確認 */
+/*
+ * 入力から次の非空白文字が `ch` であることを確認する。
+ * 一致しなければエラー終了する。
+ */
 static void expect(FILE *fp, char ch)
 {
     parse_ws(fp);
@@ -235,7 +270,10 @@ static void expect(FILE *fp, char ch)
     }
 }
 
-/* 変数宣言を解析 */
+/*
+ * `byte` 宣言を解析してシンボルテーブルへ登録する。
+ * 配列の場合は `[n]` の大きさも取得する。
+ */
 static void parse_decl(FILE *fp)
 {
     char ident[32];
@@ -259,7 +297,9 @@ static void parse_decl(FILE *fp)
 
 static void emit_expression(FILE *fp); /* forward */
 
-/* 値(変数/即値/配列要素)をACCへロード */
+/*
+ * 変数・即値・配列要素といった単項値を評価し ACC にロードする。
+ */
 static void emit_load_term(FILE *fp)
 {
     int c = fgetc(fp);
@@ -293,7 +333,9 @@ static void emit_load_term(FILE *fp)
     }
 }
 
-/* 足し算・引き算のみを扱う簡易式 */
+/*
+ * 加算・減算のみを扱う簡易的な式を評価し、結果を ACC に置く。
+ */
 static void emit_expression(FILE *fp)
 {
     emit_load_term(fp);
@@ -321,6 +363,7 @@ static void emit_expression(FILE *fp)
     }
 }
 
+/* 文字列で与えられた式を一時ファイルとして解析するヘルパー */
 static void emit_expression_str(const char *s)
 {
     FILE *tmp = fmemopen((void *)s, strlen(s), "r");
@@ -329,7 +372,9 @@ static void emit_expression_str(const char *s)
     fclose(tmp);
 }
 
-/* 単純な代入文の解析 */
+/*
+ * 変数への単純な代入文 `name = expr;` を解析する。
+ */
 static void parse_assign(FILE *fp, const char *name)
 {
     int addr = get_symbol_addr(name);
@@ -342,7 +387,10 @@ static void parse_assign(FILE *fp, const char *name)
     emit(0x75); emit(addr & 0xFF);
 }
 
-/* 配列要素への代入 */
+/*
+ * 配列の要素への代入 `name[idx] = expr;` を解析する。
+ * インデックスと値を一時領域に保存しながらコード生成を行う。
+ */
 static void parse_assign_array(FILE *fp, const char *name)
 {
     int base = get_symbol_addr(name);
@@ -380,6 +428,9 @@ typedef struct {
     char op[3];
 } Condition;
 
+/*
+ * 条件式で使用する単項値を読み取り `Term` 構造体へ展開する。
+ */
 static void parse_term(FILE *fp, Term *t)
 {
     int c = fgetc(fp);
@@ -411,6 +462,9 @@ static void parse_term(FILE *fp, Term *t)
     }
 }
 
+/*
+ * `if` や `while` の条件式 `(lhs op rhs)` を解析する。
+ */
 static void parse_condition(FILE *fp, Condition *cond)
 {
     expect(fp, '(');
@@ -438,6 +492,7 @@ static void parse_condition(FILE *fp, Condition *cond)
     expect(fp, ')');
 }
 
+/* 条件式の左辺を評価して ACC にロードする */
 static void emit_load_cond_lhs(const Condition *c)
 {
     if (c->lhs.is_num) {
@@ -454,6 +509,7 @@ static void emit_load_cond_lhs(const Condition *c)
     }
 }
 
+/* 右辺との比較命令を生成する */
 static void emit_cmp_with_rhs(const Condition *c)
 {
     if (c->rhs.is_num) {
@@ -473,6 +529,7 @@ static void emit_cmp_with_rhs(const Condition *c)
     }
 }
 
+/* 条件演算子と反転フラグから分岐命令コードを求める */
 static int branch_code(const char *op, int invert)
 {
     if (!invert) {
@@ -493,6 +550,7 @@ static int branch_code(const char *op, int invert)
     return 0x0;
 }
 
+/* 分岐命令を出力し、必要ならパッチ情報を保存する */
 static void emit_branch(int bc, const char *label)
 {
     emit(0x30 | (bc & 0x0F));
@@ -505,6 +563,7 @@ static void emit_branch(int bc, const char *label)
     }
 }
 
+/* 条件を評価して分岐命令を生成する */
 static void emit_cond_branch(const Condition *cond, const char *label, int invert)
 {
     emit_load_cond_lhs(cond);
@@ -515,6 +574,7 @@ static void emit_cond_branch(const Condition *cond, const char *label, int inver
 
 static void parse_block(FILE *fp); /* forward */
 
+/* 文字列を逆順に入力ストリームへ戻す */
 static void ungets(FILE *fp, const char *s)
 {
     for (int i = strlen(s) - 1; i >= 0; i--) {
@@ -522,6 +582,7 @@ static void ungets(FILE *fp, const char *s)
     }
 }
 
+/* if 文を解析してコード生成する */
 static void parse_if(FILE *fp)
 {
     Condition cond;
@@ -561,6 +622,7 @@ static void parse_if(FILE *fp)
     }
 }
 
+/* while ループを解析してコード生成する */
 static void parse_while(FILE *fp)
 {
     Condition cond;
@@ -578,6 +640,7 @@ static void parse_while(FILE *fp)
     define_label(end_label, code_len);
 }
 
+/* `out expr;` を解析して出力命令を生成する */
 static void parse_out(FILE *fp)
 {
     parse_ws(fp);
@@ -587,6 +650,7 @@ static void parse_out(FILE *fp)
     emit(0x10); /* OUT */
 }
 
+/* `in name;` を解析し、入力値を変数へ格納する */
 static void parse_in(FILE *fp)
 {
     char id[32];
@@ -599,7 +663,9 @@ static void parse_in(FILE *fp)
     emit(0x75); emit(addr & 0xFF); /* store to variable */
 }
 
-/* 1行の文を解析してコード化 */
+/*
+ * 1行分のステートメントを解析し対応するコードを生成する。
+ */
 static void parse_statement(FILE *fp)
 {
     parse_ws(fp);
@@ -640,6 +706,7 @@ static void parse_statement(FILE *fp)
 }
 
 /* '{' から '}' までを解析 */
+/* ブロック "{ ... }" 内のステートメント群を処理する */
 static void parse_block(FILE *fp)
 {
     while (1) {
@@ -653,6 +720,7 @@ static void parse_block(FILE *fp)
 }
 
 /* ソース全体を処理する */
+/* ソースファイル全体を逐次解析する */
 static void parse_program(FILE *fp)
 {
     while (1) {
@@ -665,6 +733,7 @@ static void parse_program(FILE *fp)
 }
 
 /* バイトコードを書き出す */
+/* 生成したバイトコードをテキスト形式で出力する */
 static void write_output(const char *path)
 {
     FILE *out = fopen(path, "w");
@@ -687,6 +756,7 @@ static void write_output(const char *path)
 }
 
 /* エントリポイント */
+/* プログラムのエントリポイント */
 int main(int argc, char **argv)
 {
     if (argc != 3) {
