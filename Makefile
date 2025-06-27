@@ -3,16 +3,14 @@ TOYCC_DIR=toycc
 CPU_BIN=$(CPU_DIR)/cpu_project_2
 TOYCC_BIN=$(TOYCC_DIR)/toycc_compiler
 
-EXAMPLE := $(if $(word 2,$(MAKECMDGOALS)),$(word 2,$(MAKECMDGOALS)),sample)
+TARGET_FILE := $(word 2,$(MAKECMDGOALS))
+TARGET_TXT  := $(patsubst %.tc,%.txt,$(TARGET_FILE))
 
-EXAMPLE_SRC=examples/$(EXAMPLE).tc
-EXAMPLE_BIN=examples/$(EXAMPLE).txt
-
-.PHONY: all clean run $(EXAMPLE)
-
-$(EXAMPLE): ; @# phony target so "make run <example>" doesn't emit a warning
+.PHONY: all build run clean $(TARGET_FILE)
 
 all: $(CPU_BIN) $(TOYCC_BIN)
+
+$(TARGET_FILE): ; @# suppress "No rule to make target" warnings
 
 $(CPU_BIN):
 	$(MAKE) -C $(CPU_DIR)
@@ -20,11 +18,17 @@ $(CPU_BIN):
 $(TOYCC_BIN):
 	$(MAKE) -C $(TOYCC_DIR)
 
-examples/%.txt: examples/%.tc $(TOYCC_BIN)
-	$(TOYCC_BIN) $< $@
+build: all
+	@if [ -z "$(TARGET_FILE)" ]; then \
+	    echo "Usage: make build <source.tc>"; exit 1; \
+	fi
+	$(TOYCC_BIN) $(TARGET_FILE) $(TARGET_TXT)
 
-run: all $(EXAMPLE_BIN)
-	echo "r $(EXAMPLE_BIN)\nc\nm 0x100\nq" | $(CPU_BIN)
+run: $(CPU_BIN)
+	@if [ -z "$(TARGET_FILE)" ]; then \
+	    echo "Usage: make run <program.txt>"; exit 1; \
+	fi
+	echo "r $(TARGET_FILE)\nc\nm 0x100\nq" | $(CPU_BIN)
 
 clean:
 	$(MAKE) -C $(CPU_DIR) clean

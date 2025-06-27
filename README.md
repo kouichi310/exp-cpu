@@ -32,23 +32,28 @@ memory addresses and accessed via `name[index]`. Example programs demonstrating
 these features are provided in the `examples` directory (`bubble_sort.tc`,
 `quicksort.tc` and `fizz_buzz.tc`).
 
-## Run the Example
+## Compile and Run the Example
 
-Use `make run` to compile the example and execute it on the simulator. The simulator will load the generated program, run until `HLT`, and display the values stored in memory beginning at address `0x100`.
-
-The simulator now allows up to 20,000,000 instructions to execute before it reports "Too Many Instructions are Executed".
-
-Variables are allocated sequentially starting at address `0x100`. Arrays occupy
-contiguous regions beginning at their base address.
+First compile the ToyCC source to a text file:
 
 ```
-$ make run
+$ make build examples/sample.tc
+```
+
+Then execute the resulting program with the simulator. The simulator will load the program, run until `HLT`, and display the values stored in memory beginning at address `0x100`.
+
+The simulator allows up to 20,000,000 instructions to execute before it reports "Too Many Instructions are Executed".
+
+Variables are allocated sequentially starting at address `0x100`. Arrays occupy contiguous regions beginning at their base address.
+
+```
+$ make run examples/sample.txt
 ```
 
 Running this command produces output similar to:
 
 ```
-$ make run
+$ make run examples/sample.txt
 echo "r examples/sample.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
 CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
 CPU0,PC=0xc>     | 100:  01 03 00 00 00 00 00 00    | 108:  00 00 00 00 00 00 00 00
@@ -68,8 +73,8 @@ memory at `0x100`.
 ### fizz\_buzz
 
 ```
-$ make run fizz_buzz
-toycc/toycc_compiler examples/fizz_buzz.tc examples/fizz_buzz.txt
+$ make build examples/fizz_buzz.tc
+$ make run examples/fizz_buzz.txt
 echo "r examples/fizz_buzz.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
 CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
 CPU0,PC=0x5c>     | 100:  15 02 00 00 00 00 00 00    | 108:  00 00 00 00 00 00 00 00
@@ -82,8 +87,8 @@ The values `15`, `02` and `00` correspond to the variables `i`, `c3` and `c5`. A
 ### bubble\_sort
 
 ```
-$ make run bubble_sort
-toycc/toycc_compiler examples/bubble_sort.tc examples/bubble_sort.txt
+$ make build examples/bubble_sort.tc
+$ make run examples/bubble_sort.txt
 echo "r examples/bubble_sort.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
 CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
 CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 04    | 108:  00 00 00 00 00 00 00 00
@@ -99,8 +104,8 @@ instead of `00`.
 ### quick\_sort
 
 ```
-$ make run quick_sort
-toycc/toycc_compiler examples/quick_sort.tc examples/quick_sort.txt
+$ make build examples/quick_sort.tc
+$ make run examples/quick_sort.txt
 echo "r examples/quick_sort.txt\nc\nm 0x100\nq" | cpu/cpu_project_2
 CPU0,PC=0x0> CPU0,PC=0x0> Program Halted.
 CPU0,PC=0xc5>     | 100:  01 02 03 04 05 05 04 02    | 108:  00 00 00 00 00 00 00 00
