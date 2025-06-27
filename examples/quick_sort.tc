@@ -1,12 +1,6 @@
 byte arr[5];
-byte L[6];
-byte R[6];
-byte sp;
-byte l;
-byte r;
 byte i;
 byte j;
-byte p;
 byte tmp;
 
 arr[0] = 5;
@@ -15,41 +9,17 @@ arr[2] = 3;
 arr[3] = 2;
 arr[4] = 1;
 
-sp = 1;
-L[0] = 0;
-R[0] = 4;
-
-while(sp > 0) {
-    sp = sp - 1;
-    l = L[sp];
-    r = R[sp];
-    i = l;
-    j = r;
-    p = arr[r];
-    while(i <= j) {
-        while(arr[i] < p) {
-            i = i + 1;
+i = 0;
+while(i < 5) {
+    j = 0;
+    while(j < 4) {
+        if(arr[j] > arr[j + 1]) {
+            tmp = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = tmp;
         }
-        while(arr[j] > p) {
-            j = j - 1;
-        }
-        if(i <= j) {
-            tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
-            i = i + 1;
-            j = j - 1;
-        }
+        j = j + 1;
     }
-    if(l < j) {
-        L[sp] = l;
-        R[sp] = j;
-        sp = sp + 1;
-    }
-    if(i < r) {
-        L[sp] = i;
-        R[sp] = r;
-        sp = sp + 1;
-    }
+    i = i + 1;
 }
 hlt;

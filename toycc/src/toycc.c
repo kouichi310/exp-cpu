@@ -13,6 +13,10 @@
 #define MAX_PATCHES 512
 #define MAX_CODE 1024
 
+/* hidden scratch locations used for array assignments */
+#define TMP_IDX_ADDR 0x1FE
+#define TMP_VAL_ADDR 0x1FF
+
 /* シンボル(変数)情報 */
 typedef struct {
     char name[32];
@@ -45,6 +49,9 @@ static int label_count = 0;
 static Patch patches[MAX_PATCHES];
 static int patch_count = 0;
 
+/* データ領域の初期値 */
+static unsigned char init_data[0x100];
+
 /* 生成されるバイトコード */
 static unsigned char code[MAX_CODE];
 static int code_len = 0;
@@ -70,6 +77,9 @@ static int add_symbol(const char *name, int size)
     strcpy(symbols[sym_count].name, name);
     symbols[sym_count].addr = next_addr;
     symbols[sym_count].size = size;
+    for (int i = 0; i < size; i++) {
+        init_data[next_addr - 0x100 + i] = 0;
+    }
     next_addr += size;
     symbols[sym_count].defined = 1;
     return sym_count++;
@@ -338,18 +348,22 @@ static void parse_assign_array(FILE *fp, const char *name)
     int base = get_symbol_addr(name);
     expect(fp, '[');
     parse_ws(fp);
-    emit_expression(fp); /* index -> ACC */
+    emit_expression(fp);                /* index -> ACC */
+    emit(0x75); emit(TMP_IDX_ADDR);     /* save index */
     parse_ws(fp);
     expect(fp, ']');
-    emit(0xB2); emit(base & 0xFF); /* add base */
-    emit(0x68);                   /* ACC -> IX */
     parse_ws(fp);
     expect(fp, '=');
     parse_ws(fp);
-    emit_expression(fp);          /* value -> ACC */
+    emit_expression(fp);                /* value -> ACC */
+    emit(0x75); emit(TMP_VAL_ADDR);     /* save value */
+    emit(0x65); emit(TMP_IDX_ADDR);     /* reload index */
+    emit(0xB2); emit(base & 0xFF);      /* add base */
+    emit(0x68);                         /* ACC -> IX */
+    emit(0x65); emit(TMP_VAL_ADDR);     /* reload value */
     parse_ws(fp);
     expect(fp, ';');
-    emit(0x77); emit(0x00);       /* ST ACC, (IX+0) */
+    emit(0x77); emit(0x00);             /* ST ACC, (IX+0) */
 }
 
 typedef struct {
@@ -445,11 +459,14 @@ static void emit_cmp_with_rhs(const Condition *c)
     if (c->rhs.is_num) {
         emit(0xF2); emit(c->rhs.num & 0xFF);
     } else if (c->rhs.is_array) {
-        emit_expression_str(c->rhs.idx);
+        /* preserve ACC containing lhs value */
+        emit(0x75); emit(TMP_VAL_ADDR);
+        emit_expression_str(c->rhs.idx);    /* index -> ACC */
         int base = get_symbol_addr(c->rhs.id);
         emit(0xB2); emit(base & 0xFF);
-        emit(0x68);
-        emit(0xF7); emit(0x00);
+        emit(0x68);                           /* ACC -> IX */
+        emit(0x65); emit(TMP_VAL_ADDR);       /* restore lhs */
+        emit(0xF7); emit(0x00);               /* CMP ACC,(IX+0) */
     } else {
         int addr = get_symbol_addr(c->rhs.id);
         emit(0xF5); emit(addr & 0xFF);
@@ -660,6 +677,12 @@ static void write_output(const char *path)
         fprintf(out, "%02x\n", code[i]);
     }
     fprintf(out, "0f\n");
+    if (next_addr > 0x100) {
+        fprintf(out, ".data 0\n");
+        for (int i = 0; i < next_addr - 0x100; i++) {
+            fprintf(out, "%02x\n", init_data[i]);
+        }
+    }
     fclose(out);
 }
 
