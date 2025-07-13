@@ -6,7 +6,7 @@ SCRIPT_DIR="$(dirname "$0")"
 
 # Additional branch tests for complex flag combinations
 
-# BP should branch when NF=1 and ZF=1
+# BP not taken when NF=1 and ZF=1
 run_test "BP nf=1 zf=1" "
 w 0 0x33
 w 1 0x05
@@ -15,14 +15,25 @@ s nf 1
 s zf 1
 i
 q
-" "CPU0,PC=0x5>"
+" "CPU0,PC=0x2>"
 
-# BZN should branch when ZF=1 and NF=0
-run_test "BZN zf=1" "
+# BZN not taken when ZF=0 and NF=0
+run_test "BZN zf=0 nf=0" "
 w 0 0x3b
 w 1 0x05
 s pc 0
 s nf 0
+s zf 0
+i
+q
+" "CPU0,PC=0x2>"
+
+# BZN should branch when ZF=1 and NF=1
+run_test "BZN zf=1 nf=1" "
+w 0 0x3b
+w 1 0x05
+s pc 0
+s nf 1
 s zf 1
 i
 q
@@ -47,7 +58,7 @@ w 1 0x05
 s pc 0
 s vf 1
 s nf 0
-s zf 0
+s zf 1
 i
 q
 " "CPU0,PC=0x5>"
@@ -58,7 +69,7 @@ w 0 0x3f
 w 1 0x05
 s pc 0
 s vf 0
-s nf 0
+s nf 1
 s zf 1
 i
 q

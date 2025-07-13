@@ -11,7 +11,7 @@
 #include "inst_adc.h"
 #include "inst_sub.h"
 #include "inst_sbc.h"
-#include "inst_bnz.h"
+#include "inst_branch.h"
 #include "inst_sys.h"
 #include "inst_io.h"
 #include "inst_cf.h"
@@ -21,7 +21,7 @@ ExecFunc isa_exec_table[256] = {
     [OP_IO]  = isa_io,
     [OP_CF]  = isa_cf,
     [OP_SR]  = isa_shift,
-    [OP_B]   = isa_bnz,
+    [OP_B]   = isa_branch,
     [OP_LD]  = isa_ld,
     [OP_ST]  = isa_st,
     [OP_SBC] = isa_sbc,

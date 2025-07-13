@@ -81,19 +81,8 @@ i
 q
 " "CPU0,PC=0x5>"
 
-run_test "BP not taken" "
+run_test "BP taken" "
 w 0 0x33
-w 1 0x05
-s pc 0
-s nf 1
-s zf 0
-i
-q
-" "CPU0,PC=0x2>"
-
-# BZN
-run_test "BZN taken" "
-w 0 0x3b
 w 1 0x05
 s pc 0
 s nf 1
@@ -102,12 +91,33 @@ i
 q
 " "CPU0,PC=0x5>"
 
+run_test "BP taken" "
+w 0 0x33
+w 1 0x05
+s pc 0
+s nf 0
+s zf 1
+i
+q
+" "CPU0,PC=0x5>"
+
+# BZN
+run_test "BZN not taken" "
+w 0 0x3b
+w 1 0x05
+s pc 0
+s nf 1
+s zf 0
+i
+q
+" "CPU0,PC=0x2>"
+
 run_test "BZN not taken" "
 w 0 0x3b
 w 1 0x05
 s pc 0
 s nf 0
-s zf 0
+s zf 1
 i
 q
 " "CPU0,PC=0x2>"
@@ -251,10 +261,21 @@ s nf 1
 s zf 0
 i
 q
+" "CPU0,PC=0x5>"
+
+run_test "BGT not taken" "
+w 0 0x37
+w 1 0x05
+s pc 0
+s vf 0
+s nf 1
+s zf 1
+i
+q
 " "CPU0,PC=0x2>"
 
 # BLE
-run_test "BLE taken" "
+run_test "BLE not taken" "
 w 0 0x3f
 w 1 0x05
 s pc 0
@@ -263,14 +284,14 @@ s nf 1
 s zf 0
 i
 q
-" "CPU0,PC=0x5>"
+" "CPU0,PC=0x2>"
 
 run_test "BLE not taken" "
 w 0 0x3f
 w 1 0x05
 s pc 0
 s vf 0
-s nf 0
+s nf 1
 s zf 0
 i
 q
