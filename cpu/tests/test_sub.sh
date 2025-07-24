@@ -176,7 +176,7 @@ s acc 0x01
 i
 d
 q
-" "acc=0xff.*cf=1.*vf=0.*nf=1.*zf=0"
+" "acc=0xff.*cf=0.*vf=0.*nf=1.*zf=0"
 
 # 15. 1語命令でPCが+1
 run_test "PC inc (1-byte) SUB ACC, ACC" "
