@@ -16,11 +16,11 @@ cpu/                 ＜ルート＞
 │
 ├─ src/                  ＜ソースコード実装＞
 │   ├─ main.c            ; シミュレータのメイン関数、コマンドインタプリタ
-│   ├─ cpu_board.c        ; 命令実行サイクル(run_step関数)の実装
+│   ├─ cpu_board.c       ; 命令実行サイクル(run_step関数)の実装
 │   ├─ cpu_fetch.c       ; fetchステージの実装
 │   ├─ cpu_decode.c      ; decodeステージの実装
 │   ├─ isa_table.c       ; 命令実行テーブルの初期化
-│   ├─ inst_ld.c         ; LD命令の実行ロジック
+│   ├─ inst_*.c          ; *命令の実行ロジック
 │   ├─ cpu_utils.c       ; レジスタ操作などのユーティリティ
 │   └─ mem.c             ; メモリアクセスAPIの実装
 │
@@ -28,8 +28,6 @@ cpu/                 ＜ルート＞
 │   ├─ run_tests.sh      ; すべてのテスト(test_*.sh)をビルドして実行する
 │   └─ test_*.sh         ; 各命令の網羅的テストスイート
 │
-├─ docs/                 ＜ドキュメント＞
-│   └─ memo.md           ; CPUとシミュレータの仕様に関するMarkdown形式のメモ
 │
 └─ .gitignore            ; Gitの管理対象外ファイルを指定
 ```
